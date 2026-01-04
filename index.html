@@ -1,0 +1,2718 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SNTF-GT Asset Management (Multi-Lang Full)</title>
+    <script src="https://unpkg.com/html5-qrcode"></script>
+    <style>
+        .register-header { padding-top:20px !important; padding-bottom:8px !important; min-height:135px !important; }
+#register-screen { overflow-y:auto !important; padding-bottom:50px !important; }
+        /* CSS Styling */
+       body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    color: #333;
+    text-align: center;
+
+    /* الخلفية الجديدة: الصورة الزرقاء */
+    background-image: url('https://grok.x.ai/image/0');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+}
+
+/* طبقة داكنة خفيفة فوق الصورة عشان النصوص تبقى واضحة */
+body::before {
+    content: "";
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background-color: rgba(0, 30, 60, 0.6); /* أزرق داكن شفاف – يمكنك تغيير 0.6 إلى 0.4 لو عايز أفتح */
+    z-index: -1;
+}
+
+/* جعل الشاشات البيضاء شفافة شوية عشان تبان أنيقة مع الخلفية */
+.app-screen {
+    background-color: rgba(255, 255, 255, 0.94);
+    backdrop-filter: blur(8px); /* تأثير ضبابي خفيف جميل (اختياري) */
+}
+
+/* شاشات الدخول والتسجيل تبقى داكنة زي الأصل */
+#login-screen,
+#register-screen,
+#forgot-password-screen {
+    background-color: rgba(0, 77, 153, 0.96);
+}
+
+        html[dir="ltr"] body {
+            text-align: left;
+        }
+
+        .app-screen {
+            width: 375px;
+            height: 812px;
+            background-color: #fff;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            border-radius: 40px;
+            overflow: hidden;
+            display: none;
+            flex-direction: column;
+            position: relative;
+            margin-bottom: 0;
+        }
+
+        /* --- Header & Navbar --- */
+        .app-header {
+            width: 100%;
+            background-color: #007bff;
+            color: white;
+            padding: 15px 10px;
+            box-sizing: border-box;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .app-header-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin: 0 auto;
+        }
+
+        .back-button {
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 0 10px;
+        }
+
+        #camera-back-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 11;
+            background-color: rgba(0, 0, 0, 0.5);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            display: none;
+        }
+
+        html[dir="ltr"] #camera-back-button {
+            right: auto;
+            left: 20px;
+        }
+
+        .nav-bar {
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+            padding: 15px 0;
+            background-color: #007bff;
+            border-top: 1px solid #0056b3;
+            z-index: 20;
+            margin-top: auto;
+        }
+
+        .nav-item {
+            color: white;
+            text-decoration: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 12px;
+            width: 20%;
+        }
+
+        .nav-item i {
+            font-size: 24px;
+            margin-bottom: 4px;
+        }
+
+        /* --- Login --- */
+        #login-screen {
+            background-color: #004d99;
+            color: white;
+            justify-content: space-between;
+        }
+
+        .lang-selector-container {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 100;
+        }
+
+        html[dir="ltr"] .lang-selector-container {
+            right: auto;
+            left: 20px;
+        }
+
+        #language-select {
+            background-color: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 14px;
+            outline: none;
+            cursor: pointer;
+        }
+
+        #language-select option {
+            background-color: #004d99;
+            color: white;
+        }
+
+        #forgot-password-screen,
+        #register-screen {
+            background-color: #004d99;
+            color: white;
+            justify-content: space-between;
+        }
+
+        .forgot-header,
+        .register-header,
+        .login-header {
+            padding-top: 80px;
+            text-align: center;
+        }
+
+        .forgot-form-container,
+        .register-form-container,
+        .login-form-container {
+            background-color: white;
+            color: #333;
+            padding: 30px;
+            border-radius: 30px 30px 0 0;
+            margin-top: auto;
+        }
+
+        .forgot-button,
+        .register-button,
+        .login-button {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-top: 10px;
+        }
+
+        .forgot-button {
+            background-color: #ffc107;
+            color: #333;
+        }
+
+        .forgot-button:hover {
+            background-color: #e0a800;
+        }
+
+        .register-button {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .register-button:hover {
+            background-color: #1e7e34;
+        }
+
+        .login-button {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .login-button:hover {
+            background-color: #0056b3;
+        }
+
+        .login-logo {
+            font-size: 2.5em;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .input-group input,
+        .input-group select {
+            width: 100%;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+
+        html[dir="rtl"] .input-group input,
+        html[dir="rtl"] .input-group select {
+            padding: 15px 40px 15px 15px;
+        }
+
+        html[dir="ltr"] .input-group input,
+        html[dir="ltr"] .input-group select {
+            padding: 15px 15px 15px 40px;
+        }
+
+        .input-group i {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #aaa;
+        }
+
+        html[dir="rtl"] .input-group i {
+            right: 15px;
+            left: auto;
+        }
+
+        html[dir="ltr"] .input-group i {
+            left: 15px;
+            right: auto;
+        }
+
+        .forgot-password-link {
+            text-align: center;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+
+        .forgot-password-link a {
+            color: #007bff;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        /* --- Home --- */
+        #home-screen {
+            display: none;
+        }
+
+        .home-header-content {
+            width: 100%;
+            background-color: #007bff;
+            color: white;
+            padding: 30px 0 80px 0;
+            box-sizing: border-box;
+            text-align: center;
+        }
+
+        .main-content {
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: white;
+            width: 100%;
+            position: relative;
+        }
+
+        ..qr-code-container {
+    width: 280px; /* الحجم الجديد – يمكنك تجربة 300px أو 320px */
+    height: 280px;
+    background: linear-gradient(135deg, #007bff, #0056b3); /* تدرج لوني أجمل */
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.3s ease; /* انتقال سلس عند التمرير */
+    box-shadow: 0 10px 30px rgba(0, 123, 255, 0.4); /* ظل جميل */
+    margin: 20px auto; /* مساحة من الأعلى والأسفل */
+}
+
+.qr-code-container:hover {
+    transform: scale(1.07); /* تكبير طفيف عند وضع المؤشر فوقه */
+    box-shadow: 0 15px 40px rgba(0, 123, 255, 0.55);
+}
+
+.qr-code-icon-new {
+    font-size: 120px; /* الأيقونة أصبحت أكبر بكثير */
+    color: white;
+    filter: drop-shadow(0 4px 10px rgba(0,0,0,0.4)); /* ظل للأيقونة لتبدو بارزة */
+}
+
+        #reader-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: none;
+            z-index: 10;
+        }
+
+        #reader {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        #scan-overlay {
+            display: none !important;
+        }
+
+        /* --- Screens --- */
+        #asset-detail-screen,
+        #close-work-order-screen,
+        #add-asset-screen {
+            display: none;
+            flex-direction: column;
+            background-color: #f4f4f4;
+            padding-bottom: 70px;
+            box-sizing: border-box;
+        }
+
+        .asset-content,
+        .report-content,
+        .add-asset-content {
+            flex-grow: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .add-asset-form .input-group {
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        html[dir="rtl"] .add-asset-form .input-group {
+            text-align: right;
+        }
+
+        html[dir="ltr"] .add-asset-form .input-group {
+            text-align: left;
+        }
+
+        .add-asset-form input,
+        .add-asset-form select {
+            margin-top: 5px;
+            padding: 12px;
+        }
+
+        html[dir="rtl"] .add-asset-form input,
+        html[dir="rtl"] .add-asset-form select {
+            text-align: right;
+        }
+
+        html[dir="ltr"] .add-asset-form input,
+        html[dir="ltr"] .add-asset-form select {
+            text-align: left;
+        }
+
+        .add-asset-form label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        .add-asset-form .submit-button {
+            background-color: #28a745;
+            margin-top: 30px;
+        }
+
+        .add-asset-form .submit-button:hover {
+            background-color: #1e7e34;
+        }
+
+        .asset-card {
+            background-color: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        html[dir="rtl"] .asset-card {
+            text-align: right;
+        }
+
+        html[dir="ltr"] .asset-card {
+            text-align: left;
+        }
+
+        .asset-card h3 {
+            color: #007bff;
+            margin-top: 0;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+
+        .account-list,
+        .asset-list,
+        .history-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .account-list li,
+        .asset-list li {
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .account-list li:last-child,
+        .asset-list li:last-child {
+            border-bottom: none;
+        }
+
+        .status-tag {
+            font-size: 12px;
+            padding: 4px 8px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+
+        .status-tag.admin {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .status-tag.current {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .status-tag.standard {
+            background-color: #ffc107;
+            color: #333;
+        }
+
+        .asset-list-item-info {
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+
+        html[dir="rtl"] .asset-list-item-info {
+            text-align: right;
+        }
+
+        html[dir="ltr"] .asset-list-item-info {
+            text-align: left;
+        }
+
+        .asset-list-item-info strong {
+            font-size: 14px;
+            color: #333;
+        }
+
+        .asset-list-item-info span {
+            font-size: 12px;
+            color: #888;
+        }
+
+        .asset-list-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        html[dir="rtl"] .asset-list-actions {
+            margin-right: 10px;
+        }
+
+        html[dir="ltr"] .asset-list-actions {
+            margin-left: 10px;
+        }
+
+        .asset-list-actions button {
+            padding: 8px 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: background-color 0.3s;
+            white-space: nowrap;
+        }
+
+        .asset-list-actions .view-details-btn {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .asset-list-actions .view-details-btn:hover {
+            background-color: #0056b3;
+        }
+
+        .asset-list-actions .delete-asset-btn {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .asset-list-actions .delete-asset-btn:hover {
+            background-color: #c82333;
+        }
+
+        #asset-filter-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        #asset-filter-select,
+        #asset-search-input {
+            width: 50%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 14px;
+            background-color: #f9f9f9;
+        }
+
+        html[dir="rtl"] #asset-filter-select,
+        html[dir="rtl"] #asset-search-input {
+            text-align: right;
+        }
+
+        html[dir="ltr"] #asset-filter-select,
+        html[dir="ltr"] #asset-search-input {
+            text-align: left;
+        }
+
+        .history-item {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            position: relative;
+        }
+
+        html[dir="rtl"] .history-item {
+            text-align: right;
+        }
+
+        html[dir="ltr"] .history-item {
+            text-align: left;
+        }
+
+        .history-item p {
+            margin: 5px 0;
+            font-size: 14px;
+            color: #555;
+            word-wrap: break-word;
+        }
+
+        .history-item strong {
+            color: #333;
+            font-weight: bold;
+        }
+
+        .history-item .delete-btn {
+            position: absolute;
+            top: 10px;
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 5px 8px;
+            cursor: pointer;
+            font-size: 12px;
+            line-height: 1;
+        }
+
+        html[dir="rtl"] .history-item .delete-btn {
+            left: 10px;
+        }
+
+        html[dir="ltr"] .history-item .delete-btn {
+            right: 10px;
+        }
+
+        .history-item .delete-btn:hover {
+            background-color: #c82333;
+        }
+
+        .history-section {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .asset-history-item {
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 15px;
+            background-color: #f9f9f9;
+        }
+
+        html[dir="rtl"] .asset-history-item {
+            text-align: right;
+        }
+
+        html[dir="ltr"] .asset-history-item {
+            text-align: left;
+        }
+
+        .history-details p {
+            margin: 4px 0;
+            font-size: 14px;
+            color: #555;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .history-details strong {
+            color: #333;
+            font-weight: bold;
+        }
+
+        .asset-info p {
+            margin: 8px 0;
+            font-size: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px dotted #ddd;
+            padding-bottom: 5px;
+        }
+
+        .asset-info strong {
+            color: #333;
+            font-weight: bold;
+        }
+
+        .asset-info select {
+            padding: 8px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            font-weight: bold;
+            color: #333;
+            flex-grow: 1;
+            max-width: 60%;
+        }
+
+        html[dir="rtl"] .asset-info select {
+            text-align: right;
+        }
+
+        html[dir="ltr"] .asset-info select {
+            text-align: left;
+        }
+
+        .status-operational {
+            color: green;
+        }
+
+        .status-needs-inspection {
+            color: orange;
+        }
+
+        .status-faulty {
+            color: red;
+        }
+
+        .start-maintenance-button,
+        .save-status-button,
+        .delete-account-button,
+        .submit-button {
+            width: 100%;
+            padding: 15px;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: background-color 0.3s;
+        }
+
+        .start-maintenance-button {
+            background-color: #28a745;
+        }
+
+        .start-maintenance-button:hover {
+            background-color: #1e7e34;
+        }
+
+        .save-status-button {
+            background-color: #007bff;
+            margin-top: 10px;
+        }
+
+        .save-status-button:hover {
+            background-color: #0056b3;
+        }
+
+        .delete-account-button {
+            background-color: #dc3545;
+        }
+
+        .delete-account-button:hover {
+            background-color: #c82333;
+        }
+
+        .submit-button {
+            background-color: #007bff;
+        }
+
+        .submit-button:hover {
+            background-color: #0056b3;
+        }
+
+        .label {
+            color: #555;
+            font-weight: normal;
+        }
+
+        .fixed-nav-bar {
+            position: absolute;
+            bottom: 0;
+        }
+
+        .report-section {
+            background-color: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        html[dir="rtl"] .report-section {
+            text-align: right;
+        }
+
+        html[dir="ltr"] .report-section {
+            text-align: left;
+        }
+
+        .report-section h4 {
+            color: #007bff;
+            margin-top: 0;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+
+        textarea,
+        input[type="text"],
+        input[type="number"],
+        input[type="password"],
+        input[type="date"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 16px;
+            margin-top: 5px;
+        }
+
+        html[dir="rtl"] textarea,
+        html[dir="rtl"] input {
+            text-align: right;
+        }
+
+        html[dir="ltr"] textarea,
+        html[dir="ltr"] input {
+            text-align: left;
+        }
+
+        .report-section select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 16px;
+            margin-top: 5px;
+        }
+
+        html[dir="rtl"] .report-section select {
+            text-align: right;
+        }
+
+        html[dir="ltr"] .report-section select {
+            text-align: left;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        #used-parts-textarea {
+            min-height: 50px;
+        }
+
+        .time-parts-group {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 15px;
+        }
+
+        .time-parts-group label {
+            width: 40%;
+            color: #555;
+        }
+
+        html[dir="rtl"] .time-parts-group label {
+            text-align: right;
+        }
+
+        html[dir="ltr"] .time-parts-group label {
+            text-align: left;
+        }
+
+        .time-parts-group input {
+            width: 55%;
+            padding: 8px;
+        }
+
+        .signature-area {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+            padding-top: 10px;
+            border-top: 1px solid #eee;
+        }
+
+        .signature-area label {
+            color: #555;
+        }
+
+        .admin-action-btn {
+            margin: 0 5px;
+            padding: 5px 8px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: background-color 0.3s;
+        }
+
+        .delete-user-btn {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .delete-user-btn:hover {
+            background-color: #c82333;
+        }
+
+        .toggle-admin-btn {
+            background-color: #ffc107;
+            color: #333;
+        }
+
+        .toggle-admin-btn.revoke {
+            background-color: #17a2b8;
+            color: white;
+        }
+
+        .toggle-admin-btn:hover {
+            opacity: 0.8;
+        }
+
+        .hidden-in-view-only {
+            display: none !important;
+        }
+
+        #fault-reason-container {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+        }
+
+        html[dir="rtl"] #fault-reason-container {
+            text-align: right;
+        }
+
+        html[dir="ltr"] #fault-reason-container {
+            text-align: left;
+        }
+
+        #fault-reason-input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #dc3545;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 16px;
+            margin-top: 5px;
+        }
+
+        html[dir="rtl"] #fault-reason-input {
+            text-align: right;
+        }
+
+        html[dir="ltr"] #fault-reason-input {
+            text-align: left;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+
+    <div id="login-screen" class="app-screen" style="display: flex;">
+        <div class="lang-selector-container">
+            <select id="language-select" onchange="changeLanguage(this.value)">
+                <option value="ar" selected>العربية</option>
+                <option value="en">English</option>
+                <option value="fr">Français</option>
+            </select>
+        </div>
+
+        <div class="login-header">
+          <div class="logo-sntf" style="text-align: center; margin: 30px 0 20px;">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/0/06/SNTF_%28logo%29.svg" alt="SNTF" style="width: 180px; height: auto;" />
+</div>
+            <h2 data-i18n="login_welcome">مرحباً بك!</h2>
+            <p data-i18n="login_subtitle">سجل الدخول إلى حسابك</p>
+        </div>
+
+        <div class="login-form-container">
+            <form id="login-form">
+                <div class="input-group">
+                    <i class="fa-solid fa-user"></i>
+                    <input type="text" id="username" data-i18n-placeholder="username_placeholder" placeholder="اسم المستخدم / الرقم" required>
+                </div>
+                <div class="input-group">
+                    <i class="fa-solid fa-lock"></i>
+                    <input type="password" id="password" data-i18n-placeholder="password_placeholder" placeholder="كلمة المرور" required>
+                </div>
+                <button type="submit" class="login-button" data-i18n="login_btn">دخول</button>
+                <div class="forgot-password-link">
+                    <a href="#" onclick="goToForgotPasswordScreen()" data-i18n="forgot_password_link">نسيت كلمة المرور؟</a>
+                </div>
+                <button type="button" class="register-button" onclick="goToRegisterScreen()" data-i18n="register_new_account">تسجيل حساب جديد</button>
+            </form>
+            <p id="error-message" style="color: red; margin-top: 10px; display: none;"></p>
+        </div>
+    </div>
+    
+    <div id="register-screen" class="app-screen">
+        <div class="register-header">
+            <div style="text-align:center; margin: 15px 0 10px;">
+  <img 
+    src="https://upload.wikimedia.org/wikipedia/commons/0/06/SNTF_%28logo%29.svg" 
+    alt="SNTF" 
+    style="width: 190px; height: auto; max-height: 85px; display: block; margin: 0 auto;"
+  />
+</div>
+            <h2 data-i18n="register_title">إنشاء حساب</h2>
+            <p data-i18n="register_subtitle">سجل كمستخدم جديد</p>
+        </div>
+
+        <div class="register-form-container login-form-container">
+            <form id="register-form">
+                <div class="input-group">
+                    <i class="fa-solid fa-user-plus"></i>
+                    <input type="text" id="register-username" data-i18n-placeholder="new_username_placeholder" placeholder="اسم مستخدم جديد" required>
+                </div>
+                <div class="input-group">
+                    <i class="fa-solid fa-lock"></i>
+                    <input type="password" id="register-password" data-i18n-placeholder="password_placeholder" placeholder="كلمة المرور" required>
+                </div>
+                <div class="input-group">
+                    <i class="fa-solid fa-check-lock"></i>
+                    <input type="password" id="register-confirm-password" data-i18n-placeholder="confirm_password_placeholder" placeholder="تأكيد كلمة المرور" required>
+                </div>
+                
+                <div class="input-group">
+                    <i class="fa-solid fa-question-circle"></i>
+                    <select id="security-question" required>
+                        <option value="" disabled selected data-i18n="select_security_question">اختر سؤال أمان</option>
+                        <option value="first_teacher" data-i18n="q_teacher">ما هو اسم معلمك الأول؟</option>
+                        <option value="birth_city_mother" data-i18n="q_city">في أي مدينة ولدت والدتك؟</option>
+                        <option value="first_pet" data-i18n="q_pet">ما هو اسم حيوانك الأليف الأول؟</option>
+                        <option value="first_car" data-i18n="q_car">ما هو موديل سيارة والدك الأولى؟</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <i class="fa-solid fa-key"></i>
+                    <input type="text" id="security-answer" data-i18n-placeholder="security_answer_placeholder" placeholder="إجابة الأمان (بالإنجليزية)" required>
+                </div>
+                
+                <button type="submit" class="register-button" data-i18n="register_btn">تسجيل</button>
+                <div style="text-align:center; margin:25px 0 15px; color:#555; font-size:0.95em;">
+  <span data-i18n="already_have_account">لديك حساب بالفعل؟</span> 
+  <a href="#" 
+     onclick="goToLoginScreenFromRegister()" 
+     style="color:#007bff; font-weight:bold; text-decoration:none;"
+     data-i18n="login_here">
+    دخول هنا
+  </a>
+</div>
+            </form>
+            <p id="register-error-message" style="color: red; margin-top: 10px; display: none;"></p>
+            <p id="register-success-message" style="color: green; margin-top: 10px; display: none;"></p>
+        </div>
+    </div>
+
+    <div id="forgot-password-screen" class="app-screen">
+        <div class="forgot-header">
+            <div class="logo-sntf" style="text-align: center; margin: 20px 0;">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/0/06/SNTF_%28logo%29.svg" alt="SNTF" style="width: 160px; height: auto;" />
+</div>
+<div style="font-size: 1.4em; font-weight: bold; margin-bottom: 10px;" data-i18n="password_recovery">
+    استعادة كلمة المرور
+</div>
+            <h2 data-i18n="account_verification">التحقق من الحساب</h2>
+            <p id="recovery-prompt" data-i18n="enter_id_recovery">أدخل معرفك لاسترجاع سؤال الأمان.</p>
+        </div>
+
+        <div class="forgot-form-container login-form-container">
+            <form id="forgot-password-form">
+                <div class="input-group" id="recovery-step-1">
+                    <i class="fa-solid fa-user"></i>
+                    <input type="text" id="recovery-username" data-i18n-placeholder="username_placeholder" placeholder="اسم المستخدم / الرقم" required>
+                </div>
+
+                <div id="recovery-step-2" style="display: none;">
+                    <div class="input-group">
+                        <label for="recovery-security-answer" style="text-align: inherit; color: #555; display: block; margin-bottom: 5px;" id="security-question-label">Security Question will appear here</label>
+                        <i class="fa-solid fa-key"></i>
+                        <input type="text" id="recovery-security-answer" data-i18n-placeholder="security_answer_placeholder" placeholder="إجابتك (بالإنجليزية)" required>
+                    </div>
+                    
+                    <div class="input-group">
+                        <i class="fa-solid fa-lock"></i>
+                        <input type="password" id="recovery-new-password" data-i18n-placeholder="new_password_placeholder" placeholder="كلمة المرور الجديدة" required>
+                    </div>
+                     <button type="button" class="forgot-button" id="confirm-recovery-btn" onclick="checkSecurityAnswer()" data-i18n="reset_password_btn">إعادة تعيين كلمة المرور</button>
+                </div>
+                
+                <button type="button" class="forgot-button" id="find-user-btn" onclick="findUserAndDisplayQuestion()" data-i18n="find_account_btn">البحث عن الحساب</button>
+                
+            </form>
+            <p id="recovery-message" style="color: red; margin-top: 10px; display: none;"></p>
+            <p style="text-align: center; margin-top: 15px; color: #555;">
+                <span data-i18n="remembered_password">تذكرت كلمة المرور؟</span> <a href="#" onclick="goToLoginScreenFromRegister()" style="color: #007bff; text-decoration: none;" data-i18n="login_here">دخول هنا</a>
+            </p>
+        </div>
+    </div>
+
+    <div id="home-screen" class="app-screen">
+        <div class="home-header-content">
+            <div class="logo-sntf" style="text-align: center; padding: 25px 0;">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/0/06/SNTF_%28logo%29.svg" alt="SNTF" style="width: 240px; height: auto;" />
+</div>
+            <div class="welcome-message">
+                <h2><span data-i18n="welcome_back">مرحباً</span> <span id="user-display">User</span>!</h2>
+                <p id="current-date-display">Date will appear here</p>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div id="reader-container">
+                <div id="camera-back-button" onclick="backFromCamera()">
+                    <i class="fa-solid fa-arrow-right"></i>
+                </div>
+                <div id="reader"></div>
+            </div>
+            
+            <div class="qr-code-container" id="qr-scan-button" onclick="startCamera()">
+                <i class="fa-solid fa-qrcode qr-code-icon-new"></i>
+            </div>
+        </div>
+        
+        <input type="file" id="qr-upload-input" accept="image/*" style="display: none;">
+
+        <div class="nav-bar">
+            <a href="#" class="nav-item active" id="nav-profile-button">
+                <i class="fa-solid fa-user"></i>
+                <span data-i18n="nav_profile">الملف</span>
+            </a>
+            <a href="#" class="nav-item" id="nav-scan-button" onclick="startCamera()">
+                <i class="fa-solid fa-camera"></i>
+                <span data-i18n="nav_scan">مسح</span>
+            </a>
+            <a href="#" class="nav-item" id="nav-add-asset-button" onclick="goToAddAssetScreen()">
+                <i class="fa-solid fa-plus"></i>
+                <span data-i18n="nav_add">إضافة</span>
+            </a>
+            <a href="#" class="nav-item" id="nav-upload-button" onclick="triggerImageUpload()">
+                <i class="fa-solid fa-image"></i>
+                <span data-i18n="nav_upload">رفع</span>
+            </a>
+            <a href="#" class="nav-item" id="logout-button">
+                <i class="fa-solid fa-right-from-bracket"></i>
+                <span data-i18n="nav_logout">خروج</span>
+            </a>
+        </div>
+    </div>
+    
+    <div id="asset-detail-screen" class="app-screen">
+        <div class="app-header">
+            <i class="fa-solid fa-arrow-right back-button" onclick="stopCamera(); goToHomeScreen();"></i>
+            <span class="app-header-title" id="asset-detail-title">Asset Details</span>
+            <div style="width: 34px;"></div>
+        </div>
+
+        <div class="asset-content"></div>
+        
+        <div class="nav-bar fixed-nav-bar">
+            <a href="#" class="nav-item" onclick="goToProfileScreen()">
+                <i class="fa-solid fa-user"></i>
+                <span data-i18n="nav_profile">الملف</span>
+            </a>
+            <a href="#" class="nav-item" onclick="startCamera()">
+                <i class="fa-solid fa-camera"></i>
+                <span data-i18n="nav_scan">مسح</span>
+            </a>
+            <a href="#" class="nav-item" onclick="goToAddAssetScreen()">
+                <i class="fa-solid fa-plus"></i>
+                <span data-i18n="nav_add">إضافة</span>
+            </a>
+            <a href="#" class="nav-item" onclick="triggerImageUpload()">
+                <i class="fa-solid fa-image"></i>
+                <span data-i18n="nav_upload">رفع</span>
+            </a>
+            <a href="#" class="nav-item" onclick="confirmLogout()">
+                <i class="fa-solid fa-right-from-bracket"></i>
+                <span data-i18n="nav_logout">خروج</span>
+            </a>
+        </div>
+    </div>
+    
+    <div id="close-work-order-screen" class="app-screen">
+        <div class="app-header">
+            <i class="fa-solid fa-arrow-right back-button" onclick="goToAssetDetailScreen(currentAssetId, ASSET_DATABASE[currentAssetId])"></i>
+            <span class="app-header-title" id="work-order-title">Close Work Order</span>
+            <div style="width: 34px;"></div>
+        </div>
+
+        <form id="work-order-form" class="report-content">
+            <div class="report-section">
+                <h4 data-i18n="work_summary">ملخص العمل</h4>
+                <textarea id="work-summary" data-i18n-placeholder="describe_work" placeholder="وصف العمل المنجز..." required></textarea>
+            </div>
+
+            <div class="report-section">
+                <h4 data-i18n="time_parts">الوقت وقطع الغيار</h4>
+                <div class="time-parts-group">
+                    <label for="hours-spent" data-i18n="hours_spent">الساعات المقضية:</label>
+                    <input type="number" id="hours-spent" data-i18n-placeholder="hours" placeholder="ساعات" step="0.5" required>
+                </div>
+                
+                <div style="margin-top: 15px;">
+                    <label for="used-parts-textarea" style="display: block; text-align: inherit; color: #555; margin-bottom: 5px;" data-i18n="used_parts">قطع الغيار المستخدمة:</label>
+                    <textarea id="used-parts-textarea" data-i18n-placeholder="parts_example" placeholder="مثال: RAM 4GB x1" required></textarea>
+                </div>
+            </div>
+            
+            <div class="report-section">
+                <h4 data-i18n="final_status">الحالة النهائية</h4>
+                <div class="time-parts-group">
+                    <label for="technician-signature" data-i18n="tech_sign">توقيع التقني:</label>
+                    <input type="text" id="technician-signature" data-i18n-placeholder="sign_name" placeholder="التوقيع (اكتب الاسم)" required>
+                </div>
+            </div>
+            
+            <button type="submit" class="submit-button" data-i18n="submit_report">
+                إكمال وإرسال التقرير
+            </button>
+        </form>
+        
+        <div class="nav-bar fixed-nav-bar">
+            <a href="#" class="nav-item" onclick="goToProfileScreen()">
+                <i class="fa-solid fa-user"></i>
+                <span data-i18n="nav_profile">الملف</span>
+            </a>
+            <a href="#" class="nav-item" onclick="startCamera()">
+                <i class="fa-solid fa-camera"></i>
+                <span data-i18n="nav_scan">مسح</span>
+            </a>
+            <a href="#" class="nav-item" onclick="goToAddAssetScreen()">
+                <i class="fa-solid fa-plus"></i>
+                <span data-i18n="nav_add">إضافة</span>
+            </a>
+            <a href="#" class="nav-item" onclick="triggerImageUpload()">
+                <i class="fa-solid fa-image"></i>
+                <span data-i18n="nav_upload">رفع</span>
+            </a>
+            <a href="#" class="nav-item" onclick="confirmLogout()">
+                <i class="fa-solid fa-right-from-bracket"></i>
+                <span data-i18n="nav_logout">خروج</span>
+            </a>
+        </div>
+    </div>
+    
+    <div id="add-asset-screen" class="app-screen">
+        <div class="app-header">
+            <i class="fa-solid fa-arrow-right back-button" onclick="goToHomeScreen()"></i>
+            <span class="app-header-title" data-i18n="add_new_asset">Add New Asset</span>
+            <div style="width: 34px;"></div>
+        </div>
+
+        <form id="add-asset-form" class="add-asset-content">
+            <div class="asset-card">
+                <h3><i class="fa-solid fa-plus-circle"></i> <span data-i18n="basic_details">Basic Details</span></h3>
+                
+                <div class="input-group">
+                    <label for="new-asset-id" data-i18n="asset_id_label">Asset ID / QR Code:</label>
+                    <input type="text" id="new-asset-id" placeholder="Example: 280222020199" required>
+                </div>
+
+                <div class="input-group">
+                    <label for="new-asset-type" data-i18n="asset_type_label">Asset Type:</label>
+                    <select id="new-asset-type" required onchange="updateAssetDetailsFields()">
+                        <option value="" disabled selected data-i18n="select_asset_type">Select Asset Type</option>
+                        <option value="Personal Computer (PC)" data-i18n="asset_type_pc">Personal Computer (PC)</option>
+                        <option value="Printer (Imprimant)" data-i18n="asset_type_printer">Printer (Imprimant)</option>
+                        <option value="UPS (Onduleur)" data-i18n="asset_type_ups">UPS (Onduleur)</option>
+                        <option value="Other" data-i18n="asset_type_other">Other</option>
+                    </select>
+                </div>
+                
+                <div class="input-group">
+                    <label for="new-asset-brand" data-i18n="brand_label">Brand:</label>
+                    <input type="text" id="new-asset-brand" placeholder="Example: HP, Canon" required>
+                </div>
+
+                <div class="input-group">
+                    <label for="new-asset-model" data-i18n="model_label">Model:</label>
+                    <input type="text" id="new-asset-model" placeholder="Example: V206HOL" required>
+                </div>
+
+                <div class="input-group">
+                    <label for="new-asset-location" data-i18n="location_label">Location:</label>
+                    <input type="text" id="new-asset-location" placeholder="Example: DSC, Chef CM" required>
+                </div>
+                
+                <div class="input-group">
+                    <label for="new-asset-purchase-date" data-i18n="purchase_date_label">Purchase Date:</label>
+                    <input type="date" id="new-asset-purchase-date" required>
+                </div>
+                
+            </div>
+            
+            <div class="asset-card" id="asset-specific-details">
+                <h3><i class="fa-solid fa-sliders"></i> <span data-i18n="specific_details">Specific Details</span></h3>
+                <p style="text-align: center; color: #aaa;" data-i18n="select_type_hint">Select an Asset Type above to view specific fields.</p>
+            </div>
+
+            <button type="submit" class="submit-button">
+                <i class="fa-solid fa-save"></i> <span data-i18n="save_new_asset">Save New Asset</span>
+            </button>
+            <p id="add-asset-message" style="color: red; margin-top: 10px; display: none; text-align: center;"></p>
+        </form>
+        
+        <div class="nav-bar fixed-nav-bar">
+            <a href="#" class="nav-item" onclick="goToProfileScreen()">
+                <i class="fa-solid fa-user"></i>
+                <span data-i18n="nav_profile">الملف</span>
+            </a>
+            <a href="#" class="nav-item" onclick="startCamera()">
+                <i class="fa-solid fa-camera"></i>
+                <span data-i18n="nav_scan">مسح</span>
+            </a>
+            <a href="#" class="nav-item active" onclick="goToAddAssetScreen()">
+                <i class="fa-solid fa-plus"></i>
+                <span data-i18n="nav_add">إضافة</span>
+            </a>
+            <a href="#" class="nav-item" onclick="triggerImageUpload()">
+                <i class="fa-solid fa-image"></i>
+                <span data-i18n="nav_upload">رفع</span>
+            </a>
+            <a href="#" class="nav-item" onclick="confirmLogout()">
+                <i class="fa-solid fa-right-from-bracket"></i>
+                <span data-i18n="nav_logout">خروج</span>
+            </a>
+        </div>
+    </div>
+    <script>
+        // ------------------ Translation Logic ------------------
+        let currentLanguage = 'ar'; 
+
+        const translations = {
+            ar: {
+            answer_for: "إجابة لـ",
+            incorrect_answer: "إجابة غير صحيحة.",
+            success_redirecting: "نجاح! جاري إعادة التوجيه...",
+                login_welcome: "مرحباً بك!",
+                login_subtitle: "سجل الدخول إلى حسابك",
+                username_placeholder: "اسم المستخدم / الرقم",
+                password_placeholder: "كلمة المرور",
+                login_btn: "دخول",
+                forgot_password_link: "نسيت كلمة المرور؟",
+                register_new_account: "تسجيل حساب جديد",
+                register_title: "إنشاء حساب",
+                register_subtitle: "سجل كمستخدم جديد",
+                new_username_placeholder: "اسم مستخدم جديد",
+                confirm_password_placeholder: "تأكيد كلمة المرور",
+                select_security_question: "اختر سؤال أمان",
+                q_teacher: "ما هو اسم معلمك الأول؟",
+                q_city: "في أي مدينة ولدت والدتك؟",
+                q_pet: "ما هو اسم حيوانك الأليف الأول؟",
+                q_car: "ما هو موديل سيارة والدك الأولى؟",
+                security_answer_placeholder: "إجابة الأمان (بالإنجليزية)",
+                register_btn: "تسجيل",
+                already_have_account: "لديك حساب بالفعل؟",
+                login_here: "دخول هنا",
+                password_recovery: "استعادة كلمة المرور",
+                account_verification: "التحقق من الحساب",
+                enter_id_recovery: "أدخل معرفك لاسترجاع سؤال الأمان.",
+                new_password_placeholder: "كلمة المرور الجديدة",
+                reset_password_btn: "إعادة تعيين كلمة المرور",
+                find_account_btn: "البحث عن الحساب",
+                remembered_password: "تذكرت كلمة المرور؟",
+                welcome_back: "مرحباً",
+                nav_profile: "الملف",
+                nav_scan: "مسح",
+                nav_add: "إضافة",
+                nav_upload: "رفع",
+                nav_logout: "خروج",
+                work_summary: "ملخص العمل",
+                describe_work: "وصف العمل المنجز...",
+                time_parts: "الوقت وقطع الغيار",
+                hours_spent: "الساعات المقضية:",
+                hours: "ساعات",
+                used_parts: "قطع الغيار المستخدمة:",
+                parts_example: "مثال: RAM 4GB x1",
+                final_status: "الحالة النهائية",
+                tech_sign: "توقيع التقني:",
+                sign_name: "التوقيع (اكتب الاسم)",
+                submit_report: "إكمال وإرسال التقرير",
+                add_new_asset: "إضافة أصل جديد",
+                basic_details: "البيانات الأساسية",
+                asset_id_label: "رقم الأصل / QR:",
+                asset_type_label: "نوع الأصل:",
+                select_asset_type: "اختر نوع الأصل",
+                // START OF ASSET TYPE TRANSLATIONS (for use by getTranslatedAssetType)
+                "Personal Computer (PC)": "حاسوب شخصي (PC)",
+                "Printer (Imprimant)": "طابعة (Imprimant)",
+                "UPS (Onduleur)": "جهاز غير منقطع (Onduleur)",
+                "Other": "أخرى (Other)",
+                asset_type_pc: "حاسوب شخصي (PC)", // For option text
+                asset_type_printer: "طابعة (Imprimant)", // For option text
+                asset_type_ups: "جهاز غير منقطع (Onduleur)", // For option text
+                asset_type_other: "أخرى (Other)", // For option text
+                // END OF ASSET TYPE TRANSLATIONS
+                brand_label: "العلامة التجارية:",
+                model_label: "الموديل:",
+                location_label: "الموقع:",
+                purchase_date_label: "تاريخ الشراء:",
+                specific_details: "تفاصيل خاصة",
+                select_type_hint: "اختر نوع الأصل أعلاه لعرض الحقول الخاصة.",
+                save_new_asset: "حفظ الأصل الجديد",
+                // START OF ASSET SPECIFIC DETAILS TRANSLATIONS
+                os_label: "نظام التشغيل (OS):",
+                processor_label: "المعالج (Processor):",
+                ram_label: "الذاكرة العشوائية (RAM):",
+                storage_label: "التخزين (Storage):",
+                color_label: "اللون:",
+                size_capacity_label: "الحجم / السعة:",
+                // END OF ASSET SPECIFIC DETAILS TRANSLATIONS
+                user_profile: "ملف المستخدم",
+                my_account: "حسابي",
+                username_label: "اسم المستخدم:",
+                status_label: "الحالة:",
+                admin: "مسؤول",
+                standard: "عادي",
+                protected: "محمي",
+                current_user: "المستخدم الحالي",
+                all_accounts: "الحسابات المسجلة",
+                revoke_admin: "سحب المسؤول",
+                make_admin: "تعيين مسؤول",
+                delete: "حذف",
+                all_assets: "الأصول المسجلة",
+                search_placeholder: "بحث بالمعرف، العلامة، أو الموقع",
+                all_statuses: "كل الحالات",
+                view_details: "عرض التفاصيل",
+                delete_asset: "حذف الأصل",
+                maint_history: "سجل الصيانة",
+                asset_info: "معلومات الأصل",
+                status_maint: "الحالة والصيانة",
+                last_maint: "آخر صيانة:",
+                save_status: "حفظ الحالة الجديدة",
+                start_maint: "بدء الصيانة",
+                fault_reason: "سبب العطل:",
+                enter_fault_reason: "أدخل سبب العطل:",
+                confirm_logout: "هل أنت متأكد أنك تريد تسجيل الخروج؟",
+                no_assets_found: "لم يتم العثور على أصول تطابق البحث.",
+                no_history: "لا توجد تقارير صيانة بعد.",
+                error_auth_admin: "خطأ في الصلاحية: فقط المسؤول يمكنه تغيير الأدوار.",
+                error_protected: "خطأ: لا يمكن تغيير حساب محمي.",
+                promote_msg: "هل أنت متأكد من ترقية هذا المستخدم إلى مسؤول؟",
+                revoke_msg: "هل أنت متأكد من سحب صلاحية المسؤول من هذا المستخدم؟",
+                delete_history_msg: "هل أنت متأكد من حذف هذا السجل؟",
+                delete_account_msg: "هل أنت متأكد من حذف هذا الحساب؟",
+                status_operational: "يعمل (Operational)",
+                status_needs_inspection: "يحتاج فحص (Needs Inspection)",
+                status_faulty: "معطل (Faulty)",
+                label_date: "التاريخ",
+                label_tech: "التقني",
+                label_summary: "الملخص",
+                label_purchased: "تاريخ الشراء",
+                label_id: "المعرف",
+                label_type: "النوع",
+                label_brand: "العلامة",
+                label_model: "التفاصيل",
+                label_location: "الموقع",
+                alert_asset_exists: "خطأ: معرف الأصل موجود بالفعل.",
+                alert_asset_added: "✅ تمت إضافة الأصل الجديد بنجاح!",
+                alert_camera_error: "خطأ في تشغيل الكاميرا.",
+                alert_no_qr: "لم يتم العثور على رمز QR.",
+                error_invalid_pass: "خطأ: كلمة المرور غير صحيحة.",
+                error_account_not_found: "خطأ: الحساب غير موجود.",
+                error_pass_mismatch: "كلمات المرور غير متطابقة.",
+                error_pass_short: "كلمة المرور قصيرة جداً (4 أحرف على الأقل).",
+                error_user_exists: "اسم المستخدم موجود بالفعل.",
+                error_security_missing: "يرجى اختيار سؤال وجواب الأمان.",
+                msg_account_created: "تم إنشاء الحساب بنجاح!",
+                alert_report_submitted: "تم إرسال التقرير بنجاح!",
+                error_asset_missing: "خطأ: بيانات الأصل مفقودة.",
+                enter_fault_reason_msg: "يرجى إدخال سبب العطل قبل الحفظ.",
+                status_updated: "تم تحديث الحالة بنجاح."
+            },
+            en: {
+            answer_for: "Answer for",
+            incorrect_answer: "Incorrect answer.",
+            success_redirecting: "Success! Redirecting...",
+                login_welcome: "Welcome Back!",
+                login_subtitle: "Login to your account",
+                username_placeholder: "Username / ID",
+                password_placeholder: "Password",
+                login_btn: "Login",
+                forgot_password_link: "Forgot Password?",
+                register_new_account: "Register New Account",
+                register_title: "Create Account",
+                register_subtitle: "Register as a new user",
+                new_username_placeholder: "New Username / ID",
+                confirm_password_placeholder: "Confirm Password",
+                select_security_question: "Select a Security Question",
+                q_teacher: "What is the name of your first teacher?",
+                q_city: "What is the city your mother was born in?",
+                q_pet: "What is the name of your first pet?",
+                q_car: "What was the model of your father's first car?",
+                security_answer_placeholder: "Your Answer (English only)",
+                register_btn: "Register",
+                already_have_account: "Already have an account?",
+                login_here: "Login here",
+                password_recovery: "Password Recovery",
+                account_verification: "Account Verification",
+                enter_id_recovery: "Enter your ID to retrieve your security question.",
+                new_password_placeholder: "New Password",
+                reset_password_btn: "Reset Password",
+                find_account_btn: "Find Account",
+                remembered_password: "Remembered your password?",
+                welcome_back: "Welcome Back",
+                nav_profile: "Profile",
+                nav_scan: "Scan",
+                nav_add: "Add",
+                nav_upload: "Upload",
+                nav_logout: "Logout",
+                work_summary: "Work Summary",
+                describe_work: "Describe the work performed...",
+                time_parts: "Time and Parts",
+                hours_spent: "Hours Spent:",
+                hours: "Hours",
+                used_parts: "Used Parts:",
+                parts_example: "Example: RAM 4GB x1",
+                final_status: "Final Status",
+                tech_sign: "Technician's Signature:",
+                sign_name: "Sign (Type Name)",
+                submit_report: "Complete & Submit Report",
+                add_new_asset: "Add New Asset",
+                basic_details: "Basic Details",
+                asset_id_label: "Asset ID / QR Code:",
+                asset_type_label: "Asset Type:",
+                select_asset_type: "Select Asset Type",
+                // START OF ASSET TYPE TRANSLATIONS (for use by getTranslatedAssetType)
+                "Personal Computer (PC)": "Personal Computer (PC)",
+                "Printer (Imprimant)": "Printer (Imprimant)",
+                "UPS (Onduleur)": "UPS (Onduleur)",
+                "Other": "Other",
+                asset_type_pc: "Personal Computer (PC)", // For option text
+                asset_type_printer: "Printer (Imprimant)", // For option text
+                asset_type_ups: "UPS (Onduleur)", // For option text
+                asset_type_other: "Other", // For option text
+                // END OF ASSET TYPE TRANSLATIONS
+                brand_label: "Brand:",
+                model_label: "Model:",
+                location_label: "Location:",
+                purchase_date_label: "Purchase Date:",
+                specific_details: "Specific Details",
+                select_type_hint: "Select an Asset Type above to view specific fields.",
+                save_new_asset: "Save New Asset",
+                // START OF ASSET SPECIFIC DETAILS TRANSLATIONS
+                os_label: "OS:",
+                processor_label: "Processor:",
+                ram_label: "RAM:",
+                storage_label: "Storage:",
+                color_label: "Color:",
+                size_capacity_label: "Size/Capacity:",
+                // END OF ASSET SPECIFIC DETAILS TRANSLATIONS
+                user_profile: "User Profile",
+                my_account: "My Account",
+                username_label: "Username / ID:",
+                status_label: "Status:",
+                admin: "Admin",
+                standard: "Standard",
+                protected: "Protected",
+                current_user: "Current User",
+                all_accounts: "Registered Accounts",
+                revoke_admin: "Revoke Admin",
+                make_admin: "Make Admin",
+                delete: "Delete",
+                all_assets: "Registered Assets",
+                search_placeholder: "Search ID, Brand, or Location",
+                all_statuses: "All Statuses",
+                view_details: "View Details",
+                delete_asset: "Delete Asset",
+                maint_history: "Maintenance History",
+                asset_info: "Asset Information",
+                status_maint: "Status & Maintenance",
+                last_maint: "Last Maintenance:",
+                save_status: "Save New Status",
+                start_maint: "Start Maintenance",
+                fault_reason: "Fault Reason:",
+                enter_fault_reason: "Enter Fault Reason:",
+                confirm_logout: "Are you sure you want to logout?",
+                no_assets_found: "No assets found matching the criteria.",
+                no_history: "No maintenance reports submitted yet.",
+                error_auth_admin: "Authorization Error: Only Admin users can change user roles.",
+                error_protected: "Error: Cannot change the role of a protected core account.",
+                promote_msg: "Are you sure you want to PROMOTE this user to Admin?",
+                revoke_msg: "Are you sure you want to REVOKE Admin rights from this user?",
+                delete_history_msg: "Are you sure you want to delete this maintenance record?",
+                delete_account_msg: "Are you sure you want to delete this account?",
+                status_operational: "Operational",
+                status_needs_inspection: "Needs Inspection",
+                status_faulty: "Faulty",
+                label_date: "Date",
+                label_tech: "Tech",
+                label_summary: "Summary",
+                label_purchased: "Purchased",
+                label_id: "ID",
+                label_type: "Type",
+                label_brand: "Brand",
+                label_model: "Details",
+                label_location: "Location",
+                alert_asset_exists: "Error: Asset ID already exists.",
+                alert_asset_added: "✅ New Asset added successfully!",
+                alert_camera_error: "Error starting scanner.",
+                alert_no_qr: "No QR Code found.",
+                error_invalid_pass: "Error: Invalid password.",
+                error_account_not_found: "Error: Account not found.",
+                error_pass_mismatch: "Passwords do not match.",
+                error_pass_short: "Password min 4 chars.",
+                error_user_exists: "Username already exists.",
+                error_security_missing: "Security info missing.",
+                msg_account_created: "Account created successfully!",
+                alert_report_submitted: "Report submitted successfully!",
+                error_asset_missing: "Error: Asset data missing.",
+                enter_fault_reason_msg: "Please enter fault reason before saving.",
+                status_updated: "Status updated successfully."
+            },
+            fr: {
+            answer_for: "Réponse pour",
+            incorrect_answer: "Réponse incorrecte.",
+            success_redirecting: "Succès ! Redirection en cours...",
+                login_welcome: "Bon retour!",
+                login_subtitle: "Connectez-vous à votre compte",
+                username_placeholder: "Nom d'utilisateur / ID",
+                password_placeholder: "Mot de passe",
+                login_btn: "Connexion",
+                forgot_password_link: "Mot de passe oublié?",
+                register_new_account: "Créer un compte",
+                register_title: "Créer un compte",
+                register_subtitle: "S'inscrire comme nouvel utilisateur",
+                new_username_placeholder: "Nouvel utilisateur / ID",
+                confirm_password_placeholder: "Confirmer le mot de passe",
+                select_security_question: "Choisir une question de sécurité",
+                q_teacher: "Quel est le nom de votre premier professeur?",
+                q_city: "Dans quelle ville est née votre mère?",
+                q_pet: "Quel est le nom de votre premier animal?",
+                q_car: "Quel était le modèle de la première voiture de votre père?",
+                security_answer_placeholder: "Votre réponse (Anglais seulement)",
+                register_btn: "S'inscrire",
+                already_have_account: "Vous avez déjà un compte?",
+                login_here: "Connexion ici",
+                password_recovery: "Récupération",
+                account_verification: "Vérification du compte",
+                enter_id_recovery: "Entrez votre ID pour récupérer votre question.",
+                new_password_placeholder: "Nouveau mot de passe",
+                reset_password_btn: "Réinitialiser",
+                find_account_btn: "Trouver le compte",
+                remembered_password: "Mot de passe retrouvé?",
+                welcome_back: "Bienvenue",
+                nav_profile: "Profil",
+                nav_scan: "Scanner",
+                nav_add: "Ajouter",
+                nav_upload: "Téléverser",
+                nav_logout: "Quitter",
+                work_summary: "Résumé du travail",
+                describe_work: "Décrivez le travail effectué...",
+                time_parts: "Temps et Pièces",
+                hours_spent: "Heures passées:",
+                hours: "Heures",
+                used_parts: "Pièces utilisées:",
+                parts_example: "Exemple: RAM 4GB x1",
+                final_status: "État final",
+                tech_sign: "Signature du technicien:",
+                sign_name: "Signer (Nom)",
+                submit_report: "Terminer et envoyer",
+                add_new_asset: "Ajouter un actif",
+                basic_details: "Détails de base",
+                asset_id_label: "ID de l'actif / QR:",
+                asset_type_label: "Type d'actif:",
+                select_asset_type: "Sélectionner le type",
+                // START OF ASSET TYPE TRANSLATIONS (for use by getTranslatedAssetType)
+                "Personal Computer (PC)": "Ordinateur Personnel (PC)",
+                "Printer (Imprimant)": "Imprimante (Imprimant)",
+                "UPS (Onduleur)": "Onduleur (UPS)",
+                "Other": "Autre (Other)",
+                asset_type_pc: "Ordinateur Personnel (PC)", // For option text
+                asset_type_printer: "Imprimante (Imprimant)", // For option text
+                asset_type_ups: "Onduleur (UPS)", // For option text
+                asset_type_other: "Autre (Other)", // For option text
+                // END OF ASSET TYPE TRANSLATIONS
+                brand_label: "Marque:",
+                model_label: "Modèle:",
+                location_label: "Emplacement:",
+                purchase_date_label: "Date d'achat:",
+                specific_details: "Détails spécifiques",
+                select_type_hint: "Sélectionnez un type ci-dessus pour voir les champs.",
+                save_new_asset: "Enregistrer",
+                // START OF ASSET SPECIFIC DETAILS TRANSLATIONS
+                os_label: "OS:",
+                processor_label: "Processeur:",
+                ram_label: "RAM:",
+                storage_label: "Stockage:",
+                color_label: "Couleur:",
+                size_capacity_label: "Taille / Capacité:",
+                // END OF ASSET SPECIFIC DETAILS TRANSLATIONS
+                user_profile: "Profil utilisateur",
+                my_account: "Mon compte",
+                username_label: "Utilisateur / ID:",
+                status_label: "Statut:",
+                admin: "Admin",
+                standard: "Standard",
+                protected: "Protégé",
+                current_user: "Utilisateur actuel",
+                all_accounts: "Comptes enregistrés",
+                revoke_admin: "Retirer Admin",
+                make_admin: "Rendre Admin",
+                delete: "Supprimer",
+                all_assets: "Actifs enregistrés",
+                search_placeholder: "Chercher ID, Marque ou Lieu",
+                all_statuses: "Tous les statuts",
+                view_details: "Voir détails",
+                delete_asset: "Supprimer",
+                maint_history: "Historique de maintenance",
+                asset_info: "Information de l'actif",
+                status_maint: "Statut et Maintenance",
+                last_maint: "Dernière maintenance:",
+                save_status: "Enregistrer le statut",
+                start_maint: "Commencer maintenance",
+                fault_reason: "Raison de la panne:",
+                enter_fault_reason: "Entrez la raison:",
+                confirm_logout: "Êtes-vous sûr de vouloir vous déconnecter?",
+                no_assets_found: "Aucun actif trouvé.",
+                no_history: "Aucun rapport soumis.",
+                error_auth_admin: "Erreur: Seuls les admins peuvent changer les rôles.",
+                error_protected: "Erreur: Compte protégé.",
+                promote_msg: "Voulez-vous PROMOUVOIR cet utilisateur en Admin?",
+                revoke_msg: "Voulez-vous RETIRER les droits Admin?",
+                delete_history_msg: "Supprimer cet enregistrement?",
+                delete_account_msg: "Supprimer ce compte?",
+                status_operational: "Opérationnel",
+                status_needs_inspection: "Besoin d'inspection",
+                status_faulty: "Défectueux",
+                label_date: "Date",
+                label_tech: "Tech",
+                label_summary: "Résumé",
+                label_purchased: "Acheté le",
+                label_id: "ID",
+                label_type: "Type",
+                label_brand: "Marque",
+                label_model: "Détails",
+                label_location: "Lieu",
+                alert_asset_exists: "Erreur: ID de l'actif existe déjà.",
+                alert_asset_added: "✅ Nouvel actif ajouté avec succès!",
+                alert_camera_error: "Erreur caméra.",
+                alert_no_qr: "Aucun code QR trouvé.",
+                error_invalid_pass: "Erreur: Mot de passe invalide.",
+                error_account_not_found: "Erreur: Compte introuvable.",
+                error_pass_mismatch: "Les mots de passe ne correspondent pas.",
+                error_pass_short: "Mot de passe trop court (min 4).",
+                error_user_exists: "Le nom d'utilisateur existe déjà.",
+                error_security_missing: "Info de sécurité manquante.",
+                msg_account_created: "Compte créé avec succès!",
+                alert_report_submitted: "Rapport envoyé avec succès!",
+                error_asset_missing: "Erreur: Données de l'actif manquantes.",
+                enter_fault_reason_msg: "Veuillez entrer la raison de la panne avant de sauvegarder.",
+                status_updated: "Statut mis à jour avec succès."
+            }
+        };
+
+        function changeLanguage(lang) {
+            currentLanguage = lang;
+            
+            if (lang === 'ar') {
+                document.documentElement.setAttribute('dir', 'rtl');
+                document.documentElement.setAttribute('lang', 'ar');
+            } else {
+                document.documentElement.setAttribute('dir', 'ltr');
+                document.documentElement.setAttribute('lang', lang);
+            }
+
+            document.querySelectorAll('[data-i18n]').forEach(element => {
+                const key = element.getAttribute('data-i18n');
+                if (translations[lang][key]) {
+                    element.textContent = translations[lang][key];
+                }
+            });
+
+            document.querySelectorAll('[data-i18n-placeholder]').forEach(element => {
+                const key = element.getAttribute('data-i18n-placeholder');
+                if (translations[lang][key]) {
+                    element.setAttribute('placeholder', translations[lang][key]);
+                }
+            });
+            
+            // Re-render dynamic content like asset details and profile screen
+            if (document.getElementById('asset-detail-screen').style.display === 'flex') {
+                if (currentAssetId === 'PROFILE_VIEW') {
+                     goToProfileScreen();
+                } else if (currentAssetId && ASSET_DATABASE[currentAssetId]) {
+                     goToAssetDetailScreen(currentAssetId, ASSET_DATABASE[currentAssetId], document.querySelector('.start-maintenance-button.hidden-in-view-only') ? true : false);
+                }
+            }
+            
+            // Re-render specific details fields if add asset screen is open
+            if (document.getElementById('add-asset-screen').style.display === 'flex') {
+                updateAssetDetailsFields();
+            }
+        }
+        
+        function getTrans(key) {
+            return translations[currentLanguage][key] || key;
+        }
+
+        function getTranslatedAssetType(typeValue) {
+            // This function specifically translates the asset type value used in the database
+            return translations[currentLanguage][typeValue] || typeValue;
+        }
+
+        // ------------------ General Variables ------------------
+        const loginScreen = document.getElementById('login-screen');
+        const registerScreen = document.getElementById('register-screen'); 
+        const homeScreen = document.getElementById('home-screen');
+        const assetDetailScreen = document.getElementById('asset-detail-screen');
+        const closeWorkOrderScreen = document.getElementById('close-work-order-screen'); 
+        const forgotPasswordScreen = document.getElementById('forgot-password-screen');
+        const addAssetScreen = document.getElementById('add-asset-screen'); 
+        const cameraBackButton = document.getElementById('camera-back-button');
+        
+        let currentAssetId = null; 
+        let currentLoggedInUser = null; 
+        let userInRecovery = null; 
+
+        const qrScanButton = document.getElementById('qr-scan-button');
+        const navScanButton = document.getElementById('nav-scan-button');
+        const navProfileButton = document.getElementById('nav-profile-button');
+        const navAddAssetButton = document.getElementById('nav-add-asset-button');
+        const logoutButton = document.getElementById('logout-button');
+        
+        const qrUploadInput = document.getElementById('qr-upload-input');
+        
+        let html5QrCode = null;
+        const readerContainer = document.getElementById('reader-container');
+        const qrCodeRegionId = "reader"; 
+        
+        let WORK_HISTORY = []; 
+        let VALID_CREDENTIALS = {};
+
+        const DEFAULT_CREDENTIALS = {
+            'makhlouf': { password: '1234', securityQ: 'first_pet', securityA: 'dog', isAdmin: true },
+            'benaffen': { password: '4567', securityQ: 'first_pet', securityA: 'hamester', isAdmin: true },
+            'zafane': { password: '7890', securityQ: 'first_pet', securityA: 'cat', isAdmin: true }
+        };
+        
+        const PROTECTED_ACCOUNTS = ['makhlouf', 'benaffen', 'zafane']; 
+        
+        const SECURITY_QUESTIONS_MAP = {
+            'first_teacher': 'q_teacher',
+            'birth_city_mother': 'q_city',
+            'first_pet': 'q_pet',
+            'first_car': 'q_car',
+        };
+
+        function saveCredentialsToLocalStorage() {
+            try {
+                const credsToSave = { ...VALID_CREDENTIALS };
+                PROTECTED_ACCOUNTS.forEach(user => {
+                    if (credsToSave[user]) { credsToSave[user].isAdmin = true; }
+                });
+                localStorage.setItem('sntf_gt_credentials', JSON.stringify(credsToSave));
+            } catch (e) { console.error("Error saving credentials", e); }
+        }
+
+        function initializeCredentials() {
+            const storedCredentials = localStorage.getItem('sntf_gt_credentials');
+            if (storedCredentials) {
+                try {
+                    VALID_CREDENTIALS = JSON.parse(storedCredentials);
+                    if (!PROTECTED_ACCOUNTS.includes('user') && VALID_CREDENTIALS.user) { delete VALID_CREDENTIALS.user; }
+                    Object.keys(DEFAULT_CREDENTIALS).forEach(user => {
+                        if (PROTECTED_ACCOUNTS.includes(user)) {
+                            VALID_CREDENTIALS[user] = { ...DEFAULT_CREDENTIALS[user], isAdmin: true }; 
+                        } else if (!VALID_CREDENTIALS[user]) {
+                             VALID_CREDENTIALS[user] = DEFAULT_CREDENTIALS[user];
+                        }
+                        if (VALID_CREDENTIALS[user] && VALID_CREDENTIALS[user].isAdmin === undefined) {
+                            VALID_CREDENTIALS[user].isAdmin = false;
+                        }
+                    });
+                } catch (e) { VALID_CREDENTIALS = DEFAULT_CREDENTIALS; saveCredentialsToLocalStorage(); }
+            } else { VALID_CREDENTIALS = DEFAULT_CREDENTIALS; saveCredentialsToLocalStorage(); }
+        }
+        
+        const DEFAULT_ASSET_DATABASE = {
+            "280222020150": { id: "280222020150", type: "Printer (Imprimant)", brand: "CANON", model: "MF3010", location: "CHEF CM", purchaseDate: "2020-11-09", lastMaintenance: "2024-01-15", status: "Operational", color: "Color", faultReason: null },
+            "280222020151": { id: "280222020151", type: "Printer (Imprimant)", brand: "EPSON", model: "TM-T88", location: "DSC", purchaseDate: "2017-08-01", lastMaintenance: "2023-11-20", status: "Operational", color: "BW", faultReason: null },
+            "280222020152": { id: "280222020152", type: "Printer (Imprimant)", brand: "EPSON", model: "TM L500A", location: "Signalisation", purchaseDate: "2015-08-09", lastMaintenance: "N/A", status: "Needs Inspection", color: "BW", faultReason: null },
+            "280222020140": { id: "280222020140", type: "UPS (Onduleur)", brand: "APC", model: "500VA", location: "DSC", purchaseDate: "2017-11-20", lastMaintenance: "2024-05-10", status: "Operational", size: "500VA", faultReason: null },
+            "280222020141": { id: "280222020141", type: "UPS (Onduleur)", brand: "ΑΕΤΟΝ", model: "1100VA", location: "DSC", purchaseDate: "2018-08-05", lastMaintenance: "N/A", status: "Needs Inspection", size: "1100VA", faultReason: null },
+            "280222020131": { id: "280222020131", type: "Personal Computer (PC)", brand: "ACER", model: "V206HOL", location: "Chef CM", purchaseDate: "2018-08-06", lastMaintenance: "2024-08-01", status: "Operational", os: "Win 7 x64", processor: "15", ram: "8 Go", storage: "565 Go (SDD/HDD)", faultReason: null },
+            "280222020132": { id: "280222020132", type: "Personal Computer (PC)", brand: "ACER", model: "Verition", location: "DSC", purchaseDate: "2017-11-10", lastMaintenance: "N/A", status: "Operational", os: "Win 7 x64", processor: "15", ram: "8 Go", storage: "256 Go (SDD/HDD)", faultReason: null },
+            "280222020133": { id: "280222020133", type: "Personal Computer (PC)", brand: "Montage - U", model: "Montage - U", location: "Secrétariat CM", purchaseDate: "2015-12-12", lastMaintenance: "2023-01-20", status: "Faulty", os: "Win 7 x64", processor: "15", ram: "4 Go", storage: "258 Go (SDD/HDD)", faultReason: "Hard drive failure" },
+            "280222020134": { id: "280222020134", type: "Personal Computer (PC)", brand: "HP", model: "57540-E", location: "DSC", purchaseDate: "2018-06-08", lastMaintenance: "2024-06-15", status: "Operational", os: "Win 7 x64", processor: "15", ram: "8 Go", storage: "258 Go (SDD/HDD)", faultReason: null },
+            "280222020135": { id: "280222020135", type: "Personal Computer (PC)", brand: "montage - U", model: "montage - U", location: "Chef CM", purchaseDate: "2018-10-02", lastMaintenance: "2024-09-01", status: "Operational", os: "Win10 x64", processor: "15", ram: "4 Go", storage: "256 Go (SDD/HDD)", faultReason: null },
+        };
+        
+        let ASSET_DATABASE = {}; 
+        
+        function saveAssetDatabase() {
+            try { localStorage.setItem('sntf_gt_assets', JSON.stringify(ASSET_DATABASE)); } catch (e) { console.error("Error saving assets", e); }
+        }
+        
+        function saveWorkHistory() {
+            try { localStorage.setItem('sntf_gt_work_history', JSON.stringify(WORK_HISTORY)); } catch (e) { console.error("Error saving history", e); }
+        }
+        
+        function initializeAssetDatabase() {
+            const storedAssets = localStorage.getItem('sntf_gt_assets');
+            if (storedAssets) {
+                try {
+                    let loadedAssets = JSON.parse(storedAssets);
+                    ASSET_DATABASE = { ...DEFAULT_ASSET_DATABASE, ...loadedAssets }; 
+                    Object.keys(ASSET_DATABASE).forEach(assetId => {
+                        if (ASSET_DATABASE[assetId].faultReason === undefined) { ASSET_DATABASE[assetId].faultReason = null; }
+                    });
+                } catch (e) { ASSET_DATABASE = DEFAULT_ASSET_DATABASE; saveAssetDatabase(); }
+            } else { ASSET_DATABASE = DEFAULT_ASSET_DATABASE; saveAssetDatabase(); }
+            
+            const storedHistory = localStorage.getItem('sntf_gt_work_history');
+            if (storedHistory) {
+                try { WORK_HISTORY = JSON.parse(storedHistory); } catch (e) { WORK_HISTORY = []; }
+            } else { WORK_HISTORY = []; }
+        }
+        
+        const AVAILABLE_STATUSES = ["Operational", "Needs Inspection", "Faulty"];
+        
+        function getStatusColorClass(status) {
+            if (status === 'Operational') return 'status-operational';
+            if (status === 'Needs Inspection') return 'status-needs-inspection';
+            if (status === 'Faulty') return 'status-faulty';
+            return '';
+        }
+
+        function getTranslatedStatus(status) {
+            if (status === 'Operational') return getTrans('status_operational');
+            if (status === 'Needs Inspection') return getTrans('status_needs_inspection');
+            if (status === 'Faulty') return getTrans('status_faulty');
+            return status;
+        }
+        
+        function getTodayDateString() {
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = String(today.getMonth() + 1).padStart(2, '0'); 
+            const day = String(today.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+        
+        function generateUniqueId() {
+            return Date.now().toString(36) + Math.random().toString(36).substring(2, 5);
+        }
+
+        function confirmLogout() {
+            if (confirm(getTrans('confirm_logout'))) {
+                logoutUser();
+            }
+        }
+        
+        function logoutUser() {
+            stopCamera();
+            currentLoggedInUser = null; 
+            hideAllScreens();
+            loginScreen.style.display = 'flex';
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+            document.getElementById('error-message').style.display = 'none';
+        }
+
+        function hideAllScreens() {
+            loginScreen.style.display = 'none';
+            registerScreen.style.display = 'none'; 
+            forgotPasswordScreen.style.display = 'none'; 
+            homeScreen.style.display = 'none';
+            assetDetailScreen.style.display = 'none';
+            closeWorkOrderScreen.style.display = 'none'; 
+            addAssetScreen.style.display = 'none'; 
+        }
+        
+        function goToHomeScreen() {
+            stopCamera();
+            hideAllScreens();
+            homeScreen.style.display = 'flex';
+            document.querySelectorAll('.nav-bar .nav-item').forEach(item => item.classList.remove('active'));
+            document.getElementById('nav-profile-button').classList.add('active'); 
+        }
+
+        function goToLoginScreenFromRegister() { 
+            hideAllScreens();
+            loginScreen.style.display = 'flex';
+        }
+        
+        function goToForgotPasswordScreen() {
+            hideAllScreens();
+            forgotPasswordScreen.style.display = 'flex';
+            resetRecoveryScreen(); 
+        }
+        
+        function resetRecoveryScreen() {
+            document.getElementById('recovery-username').value = '';
+            document.getElementById('recovery-security-answer').value = '';
+            document.getElementById('recovery-new-password').value = '';
+            document.getElementById('recovery-message').style.display = 'none';
+            document.getElementById('recovery-step-1').style.display = 'block';
+            document.getElementById('recovery-step-2').style.display = 'none';
+            document.getElementById('find-user-btn').style.display = 'block';
+            document.getElementById('confirm-recovery-btn').style.display = 'block';
+            document.getElementById('recovery-prompt').textContent = getTrans('enter_id_recovery');
+            userInRecovery = null;
+        }
+
+        function goToRegisterScreen() { 
+            hideAllScreens();
+            document.getElementById('register-error-message').style.display = 'none';
+            document.getElementById('register-success-message').style.display = 'none';
+            registerScreen.style.display = 'flex';
+        }
+        
+        function goToAddAssetScreen() {
+            stopCamera();
+            hideAllScreens();
+            document.getElementById('new-asset-id').value = '';
+            document.getElementById('new-asset-type').selectedIndex = 0;
+            document.getElementById('new-asset-brand').value = '';
+            document.getElementById('new-asset-model').value = '';
+            document.getElementById('new-asset-location').value = '';
+            document.getElementById('new-asset-purchase-date').value = getTodayDateString(); 
+            
+            document.getElementById('asset-specific-details').innerHTML = 
+                `<h3><i class="fa-solid fa-sliders"></i> ${getTrans('specific_details')}</h3><p style="text-align: center; color: #aaa;">${getTrans('select_type_hint')}</p>`;
+            document.getElementById('add-asset-message').style.display = 'none';
+            
+            addAssetScreen.style.display = 'flex';
+            document.querySelectorAll('.nav-bar .nav-item').forEach(item => item.classList.remove('active'));
+            document.getElementById('nav-add-asset-button').classList.add('active');
+        }
+        
+        function updateAssetDetailsFields() {
+            const assetType = document.getElementById('new-asset-type').value;
+            const detailsContainer = document.getElementById('asset-specific-details');
+            
+            let fieldsHTML = `<h3><i class="fa-solid fa-sliders"></i> ${getTrans('specific_details')}</h3>`;
+
+            if (assetType.includes('PC')) {
+                fieldsHTML += `
+                    <div class="input-group"><label for="new-asset-os">${getTrans('os_label')}</label><input type="text" id="new-asset-os" placeholder="Win 10 x64" required></div>
+                    <div class="input-group"><label for="new-asset-processor">${getTrans('processor_label')}</label><input type="text" id="new-asset-processor" placeholder="15" required></div>
+                    <div class="input-group"><label for="new-asset-ram">${getTrans('ram_label')}</label><input type="text" id="new-asset-ram" placeholder="8 Go" required></div>
+                    <div class="input-group"><label for="new-asset-storage">${getTrans('storage_label')}</label><input type="text" id="new-asset-storage" placeholder="500 Go" required></div>
+                `;
+            } else if (assetType.includes('Printer')) {
+                fieldsHTML += `
+                    <div class="input-group"><label for="new-asset-color">${getTrans('color_label')}</label><select id="new-asset-color" required><option value="Color">Color</option><option value="BW">Black & White</option></select></div>
+                `;
+            } else if (assetType.includes('UPS')) {
+                fieldsHTML += `
+                    <div class="input-group"><label for="new-asset-size">${getTrans('size_capacity_label')}</label><input type="text" id="new-asset-size" placeholder="1100VA" required></div>
+                `;
+            } else { fieldsHTML += `<p style="text-align: center; color: #aaa;">${getTrans('select_type_hint')}</p>`; }
+            detailsContainer.innerHTML = fieldsHTML;
+        }
+
+        function deleteAsset(assetIdToDelete) {
+            if (confirm(`${getTrans('delete_asset')} "${assetIdToDelete}"?`)) {
+                if (ASSET_DATABASE[assetIdToDelete]) {
+                    delete ASSET_DATABASE[assetIdToDelete];
+                    saveAssetDatabase();
+                    WORK_HISTORY = WORK_HISTORY.filter(entry => entry.assetId !== assetIdToDelete);
+                    saveWorkHistory();
+                    goToProfileScreen(); 
+                }
+            }
+        }
+        
+        function generateAssetListHTML(filterStatus = 'All', searchTerm = '') {
+            let assetListHTML = '';
+            const allAssetIds = Object.keys(ASSET_DATABASE).sort();
+            const lowerCaseSearch = searchTerm.toLowerCase();
+            
+            const filteredAssetIds = allAssetIds.filter(assetId => {
+                const asset = ASSET_DATABASE[assetId];
+                const statusMatch = filterStatus === 'All' || asset.status === filterStatus;
+                const searchMatch = lowerCaseSearch === '' || 
+                    asset.id.toLowerCase().includes(lowerCaseSearch) ||
+                    asset.brand.toLowerCase().includes(lowerCaseSearch) ||
+                    asset.location.toLowerCase().includes(lowerCaseSearch);
+                return statusMatch && searchMatch;
+            });
+
+            if (filteredAssetIds.length > 0) {
+                filteredAssetIds.forEach(assetId => {
+                    const asset = ASSET_DATABASE[assetId];
+                    const translatedType = getTranslatedAssetType(asset.type); 
+                    const deleteAssetButton = `<button class="delete-asset-btn" onclick="deleteAsset('${asset.id}')">${getTrans('delete_asset')}</button>`;
+                    assetListHTML += `
+                        <li>
+                            <div class="asset-list-item-info">
+                                <strong><i class="fa-solid fa-barcode"></i> ${asset.id} - ${translatedType}</strong>
+                                <span>${asset.brand} - ${asset.location} (${getTrans('status_label')} ${getTranslatedStatus(asset.status)})</span>
+                            </div>
+                            <div class="asset-list-actions">
+                                <button class="view-details-btn" onclick="goToAssetDetailScreen('${asset.id}', ASSET_DATABASE['${asset.id}'], true)">${getTrans('view_details')}</button>
+                                ${deleteAssetButton}
+                            </div>
+                        </li>
+                    `;
+                });
+            } else {
+                assetListHTML = `<p style="text-align: center; color: #aaa;">${getTrans('no_assets_found')}</p>`;
+            }
+            document.getElementById('asset-list-count').textContent = `(${filteredAssetIds.length} of ${allAssetIds.length})`;
+            return assetListHTML;
+        }
+
+        function filterAssetsBySearchAndStatus() {
+            const filterValue = document.getElementById('asset-filter-select').value;
+            const searchValue = document.getElementById('asset-search-input').value;
+            const assetListElement = document.getElementById('asset-list-container');
+            if (assetListElement) { assetListElement.innerHTML = generateAssetListHTML(filterValue, searchValue); }
+        }
+        
+        function goToProfileScreen() {
+            stopCamera();
+            hideAllScreens(); 
+            currentAssetId = 'PROFILE_VIEW';
+
+            document.getElementById('asset-detail-title').textContent = getTrans('user_profile');
+            
+            const assetContent = assetDetailScreen.querySelector('.asset-content');
+            assetContent.innerHTML = ''; 
+            
+            const isAdminUser = VALID_CREDENTIALS[currentLoggedInUser] && VALID_CREDENTIALS[currentLoggedInUser].isAdmin;
+            const userStatusText = isAdminUser ? getTrans('admin') : getTrans('standard');
+            const userStatusColor = isAdminUser ? 'red' : 'green';
+            
+            let profileContent = `
+                <div class="asset-card">
+                    <h3><i class="fa-solid fa-id-badge"></i> ${getTrans('my_account')}</h3>
+                    <div class="asset-info">
+                        <p><span class="label">${getTrans('username_label')}</span><strong id="profile-username">${currentLoggedInUser}</strong></p>
+                        <p><span class="label">${getTrans('status_label')}</span><strong id="profile-status" style="color: ${userStatusColor};">${userStatusText} ${PROTECTED_ACCOUNTS.includes(currentLoggedInUser) ? '(' + getTrans('protected') + ')' : ''}</strong></p>
+                    </div>
+                </div>
+            `;
+            
+            let accountsListHTML = '';
+            const allUsernames = Object.keys(VALID_CREDENTIALS).sort(); 
+
+            allUsernames.forEach(user => {
+                const userData = VALID_CREDENTIALS[user];
+                const isProtected = PROTECTED_ACCOUNTS.includes(user); 
+                const isCurrentUser = user === currentLoggedInUser;
+                
+                let statusTag = '';
+                let adminActionButtons = '';
+                
+                if (isCurrentUser) { statusTag = `<span class="status-tag current">${getTrans('current_user')}</span>`; } 
+                else if (userData.isAdmin) { statusTag = `<span class="status-tag admin">${getTrans('admin')}</span>`; } 
+                else { statusTag = `<span class="status-tag standard">${getTrans('standard')}</span>`; }
+                
+                if (isAdminUser && !isCurrentUser && !isProtected) {
+                    const adminToggleText = userData.isAdmin ? getTrans('revoke_admin') : getTrans('make_admin');
+                    const toggleClass = userData.isAdmin ? 'revoke' : '';
+                    adminActionButtons = `
+                        <button class="admin-action-btn toggle-admin-btn ${toggleClass}" onclick="toggleAdminStatus('${user}')">${adminToggleText}</button>
+                        <button class="admin-action-btn delete-user-btn" onclick="deleteAccount('${user}')">${getTrans('delete')}</button>
+                    `;
+                } else if (isProtected && isAdminUser && !isCurrentUser) {
+                     adminActionButtons = `<span style="font-size:12px; color: #888;">Core Admin</span>`;
+                }
+
+                accountsListHTML += `
+                    <li>
+                        <span><i class="fa-solid fa-user-tag" style="margin-right: 5px;"></i> ${user}</span>
+                        <div style="display: flex; gap: 10px; align-items: center;">${statusTag}${adminActionButtons}</div>
+                    </li>
+                `;
+            });
+            
+            profileContent += `
+                <div class="asset-card">
+                    <h3><i class="fa-solid fa-list-ul"></i> ${getTrans('all_accounts')} (${allUsernames.length})</h3>
+                    <ul class="account-list">${accountsListHTML}</ul>
+                </div>
+            `;
+            
+            let filterOptionsHTML = `<option value="All">${getTrans('all_statuses')}</option>`;
+            AVAILABLE_STATUSES.forEach(status => {
+                filterOptionsHTML += `<option value="${status}">${getTranslatedStatus(status)}</option>`;
+            });
+            
+            profileContent += `
+                <div class="asset-card">
+                    <h3><i class="fa-solid fa-boxes-stacked"></i> ${getTrans('all_assets')} <span id="asset-list-count">(${Object.keys(ASSET_DATABASE).length})</span></h3>
+                    <div id="asset-filter-container">
+                        <input type="text" id="asset-search-input" placeholder="${getTrans('search_placeholder')}" oninput="filterAssetsBySearchAndStatus()">
+                        <select id="asset-filter-select" onchange="filterAssetsBySearchAndStatus()">${filterOptionsHTML}</select>
+                    </div>
+                    <ul class="asset-list" id="asset-list-container"></ul>
+                </div>
+            `;
+            
+            let historyListHTML = '';
+            const reversedHistory = [...WORK_HISTORY].reverse(); 
+            
+            if (reversedHistory.length > 0) {
+                reversedHistory.forEach(entry => {
+                    const deleteHistoryButton = `<button class="delete-btn" onclick="deleteHistoryEntry('${entry.id}')"><i class="fa-solid fa-trash-can"></i></button>`;
+                    historyListHTML += `
+                        <div class="history-item">
+                            ${deleteHistoryButton}
+                            <p><strong>${getTrans('label_id')}:</strong> ${entry.assetId}</p>
+                            <p><strong>${getTrans('label_date')}:</strong> ${entry.date}</p>
+                            <p><strong>${getTrans('label_tech')}:</strong> ${entry.technician}</p>
+                            <p><strong>${getTrans('used_parts')}:</strong> ${entry.parts}</p> <p><strong>${getTrans('label_summary')}:</strong> ${entry.summary}</p>
+                        </div>
+                    `;
+                });
+            } else {
+                historyListHTML = `<p style="text-align: center; color: #aaa;">${getTrans('no_history')}</p>`;
+            }
+            
+            profileContent += `
+                <div class="asset-card">
+                    <h3><i class="fa-solid fa-clock-rotate-left"></i> ${getTrans('maint_history')} (${WORK_HISTORY.length})</h3>
+                    <div class="history-list">${historyListHTML}</div>
+                </div>
+            `;
+            
+            assetContent.innerHTML = profileContent;
+            filterAssetsBySearchAndStatus(); 
+            document.getElementById('asset-list-count').textContent = `(${Object.keys(ASSET_DATABASE).length} of ${Object.keys(ASSET_DATABASE).length})`;
+            assetDetailScreen.style.display = 'flex';
+        }
+        
+        function toggleAdminStatus(usernameToToggle) {
+            const currentAdmin = VALID_CREDENTIALS[currentLoggedInUser];
+            if (!currentAdmin || !currentAdmin.isAdmin) { alert(getTrans('error_auth_admin')); return; }
+            if (PROTECTED_ACCOUNTS.includes(usernameToToggle)) { alert(getTrans('error_protected')); return; }
+            
+            const userData = VALID_CREDENTIALS[usernameToToggle];
+            const newStatus = !userData.isAdmin;
+            const confirmMessage = newStatus ? getTrans('promote_msg') : getTrans('revoke_msg');
+            
+            if (confirm(confirmMessage)) {
+                userData.isAdmin = newStatus;
+                saveCredentialsToLocalStorage();
+                goToProfileScreen();
+            }
+        }
+        
+        function deleteHistoryEntry(historyId) {
+            if (confirm(getTrans('delete_history_msg'))) {
+                WORK_HISTORY = WORK_HISTORY.filter(entry => entry.id !== historyId);
+                saveWorkHistory();
+                goToProfileScreen();
+            }
+        }
+
+        function deleteAccount(usernameToDelete) {
+            const currentAdmin = VALID_CREDENTIALS[currentLoggedInUser];
+            if (!currentAdmin || !currentAdmin.isAdmin) { alert(getTrans('error_auth_admin')); return; }
+            if (PROTECTED_ACCOUNTS.includes(usernameToDelete)) { alert(getTrans('error_protected')); return; }
+            if (usernameToDelete === currentLoggedInUser) { return; }
+            
+            if (confirm(getTrans('delete_account_msg'))) {
+                if (VALID_CREDENTIALS[usernameToDelete]) {
+                    delete VALID_CREDENTIALS[usernameToDelete];
+                    saveCredentialsToLocalStorage(); 
+                    goToProfileScreen();
+                }
+            }
+        }
+        
+        function saveNewStatus(assetId) {
+            const statusSelect = document.getElementById('asset-status-select');
+            const newStatus = statusSelect.value;
+            const faultReasonInput = document.getElementById('fault-reason-input');
+            const assetData = ASSET_DATABASE[assetId];
+            
+            if (newStatus === 'Faulty') {
+                const reason = faultReasonInput ? faultReasonInput.value.trim() : '';
+                if (!reason) { alert(getTrans('enter_fault_reason_msg')); return; }
+                assetData.faultReason = reason;
+            } else { assetData.faultReason = null; }
+
+            assetData.status = newStatus;
+            saveAssetDatabase(); 
+            alert(getTrans('status_updated'));
+            goToAssetDetailScreen(assetId, assetData);
+        }
+
+        function goToAssetDetailScreen(assetId, assetData, isViewOnly = false) {
+            stopCamera();
+            hideAllScreens(); 
+            currentAssetId = assetId; 
+            
+            const assetHistory = WORK_HISTORY.filter(entry => entry.assetId === assetId).reverse(); 
+
+            let historyHTML = '';
+            if (assetHistory.length > 0) {
+                historyHTML = assetHistory.map(entry => `
+                    <div class="asset-history-item">
+                        <div class="history-details">
+                            <p><span class="label">${getTrans('label_date')}:</span><strong>${entry.date}</strong></p>
+                            <p><span class="label">${getTrans('label_tech')}:</span><strong>${entry.technician}</strong></p>
+                            <p><span class="label">${getTrans('used_parts')}:</span><strong>${entry.parts}</strong></p> <p style="border-bottom: none;"><span class="label">${getTrans('label_summary')}:</span><strong>${entry.summary}</strong></p>
+                        </div>
+                    </div>
+                `).join('');
+            } else { historyHTML = `<p style="text-align: center; color: #aaa;">${getTrans('no_history')}</p>`; }
+
+            let statusOptions = AVAILABLE_STATUSES.map(status => {
+                const selected = status === assetData.status ? 'selected' : '';
+                return `<option value="${status}" ${selected}>${getTranslatedStatus(status)}</option>`;
+            }).join('');
+            
+            const initialStatusClass = getStatusColorClass(assetData.status);
+            const viewOnlyClass = isViewOnly ? 'hidden-in-view-only' : '';
+            
+            let faultReasonHTML = '';
+            const initialFaultReason = assetData.faultReason || '';
+            const isFaulty = assetData.status === 'Faulty';
+            
+            if (isViewOnly) {
+                if (isFaulty && initialFaultReason) {
+                    faultReasonHTML = `
+                        <div id="fault-reason-container">
+                            <label style="display: block; font-weight: bold; color: #dc3545;">
+                                <i class="fa-solid fa-triangle-exclamation"></i> ${getTrans('fault_reason')}
+                            </label>
+                            <strong style="display: block; margin-top: 5px; color: #333; padding: 5px 0;">${initialFaultReason}</strong>
+                        </div>
+                    `;
+                }
+            } else {
+                faultReasonHTML = `
+                    <div id="fault-reason-container" style="display: ${isFaulty ? 'block' : 'none'};">
+                        <label for="fault-reason-input" style="display: block; font-weight: bold; color: #dc3545; margin-bottom: 5px;">
+                            <i class="fa-solid fa-pen-to-square"></i> ${getTrans('enter_fault_reason')}
+                        </label>
+                        <input type="text" id="fault-reason-input" value="${initialFaultReason}" ${isFaulty ? 'required' : ''}>
+                    </div>
+                `;
+            }
+
+            const assetContent = assetDetailScreen.querySelector('.asset-content');
+            
+            // --- START: MODIFIED CODE ---
+            // Explanation: Added a paragraph to display the asset's brand.
+            assetContent.innerHTML = `
+                <div class="asset-card" id="asset-info-card">
+                    <h3><i class="fa-solid fa-desktop"></i> ${getTrans('asset_info')}</h3>
+                    <div class="asset-info">
+                        <p><span class="label">${getTrans('label_id')}:</span><strong id="asset-id"></strong></p>
+                        <p><span class="label">${getTrans('label_type')}:</span><strong id="asset-type"></strong></p>
+                        <p><span class="label">${getTrans('label_brand')}:</span><strong id="asset-brand"></strong></p>
+                        <p><span class="label">${getTrans('label_model')}:</span><strong id="asset-model"></strong></p>
+                        <p><span class="label">${getTrans('label_location')}:</span><strong id="asset-location"></strong></p>
+                    </div>
+                </div>
+
+                <div class="asset-card" id="asset-status-card">
+                    <h3><i class="fa-solid fa-chart-line"></i> ${getTrans('status_maint')}</h3>
+                    <div class="asset-info">
+                        <p><span class="label">${getTrans('label_purchased')}:</span><strong id="asset-purchase-date"></strong></p>
+                        <p><span class="label">${getTrans('last_maint')}</span><strong id="asset-last-maintenance"></strong></p>
+                        <p style="border-bottom: ${isViewOnly ? '1px dotted #ddd;' : 'none;'} padding-bottom: ${isViewOnly ? '5px;' : '0;'}">
+                            <span class="label">${getTrans('status_label')}</span>
+                            <select id="asset-status-select" class="${initialStatusClass} ${viewOnlyClass}" onchange="this.className = getStatusColorClass(this.value); toggleFaultReasonInput(this.value);" ${isViewOnly ? 'disabled' : ''}>${statusOptions}</select>
+                            <strong id="asset-status-display" style="display: ${isViewOnly ? 'block' : 'none'}; color: ${getStatusColorClass(assetData.status)};">${getTranslatedStatus(assetData.status)}</strong>
+                        </p>
+                    </div>
+                    ${faultReasonHTML} <button class="save-status-button ${viewOnlyClass}" onclick="saveNewStatus('${assetId}')">
+                        <i class="fa-solid fa-save"></i> ${getTrans('save_status')}
+                    </button>
+                </div>
+                
+                <div class="asset-card" id="asset-history-card">
+                    <h3><i class="fa-solid fa-clock-rotate-left"></i> ${getTrans('maint_history')} (${assetHistory.length})</h3>
+                    <div class="history-section">${historyHTML}</div>
+                </div>
+                <button class="start-maintenance-button ${viewOnlyClass}" id="start-maintenance-btn" onclick="goToCloseWorkOrderScreen()">
+                    <i class="fa-solid fa-wrench"></i> ${getTrans('start_maint')}
+                </button>
+            `;
+
+            if (assetData) {
+                document.getElementById('asset-detail-title').textContent = getTranslatedAssetType(assetData.type) + " - " + assetId;
+                document.getElementById('asset-id').textContent = assetData.id;
+                document.getElementById('asset-type').textContent = getTranslatedAssetType(assetData.type); 
+                
+                // Explanation: Populating the new 'asset-brand' element with data.
+                document.getElementById('asset-brand').textContent = assetData.brand;
+                // --- END: MODIFIED CODE ---
+
+                let detailsDisplay;
+                if (assetData.type.includes('Printer')) { detailsDisplay = `${assetData.model} (${assetData.color})`; } 
+                else if (assetData.type.includes('UPS')) { detailsDisplay = `${assetData.model} (${assetData.size})`; } 
+                else if (assetData.type.includes('PC')) { detailsDisplay = `${assetData.os}, ${assetData.ram} RAM`; } 
+                else { detailsDisplay = assetData.model || 'N/A'; }
+                
+                document.getElementById('asset-model').textContent = detailsDisplay;
+                document.getElementById('asset-location').textContent = assetData.location;
+                document.getElementById('asset-purchase-date').textContent = assetData.purchaseDate;
+                document.getElementById('asset-last-maintenance').textContent = assetData.lastMaintenance;
+                
+                if (isViewOnly) { document.getElementById('asset-status-display').textContent = getTranslatedStatus(assetData.status); }
+                assetDetailScreen.style.display = 'flex';
+            } else { goToHomeScreen(); }
+        }
+        
+        function toggleFaultReasonInput(selectedStatus) {
+            const faultReasonContainer = document.getElementById('fault-reason-container');
+            if (faultReasonContainer) {
+                if (selectedStatus === 'Faulty') {
+                    faultReasonContainer.style.display = 'block';
+                    const input = document.getElementById('fault-reason-input');
+                    if(input) input.setAttribute('required', 'required');
+                } else {
+                    faultReasonContainer.style.display = 'none';
+                    const input = document.getElementById('fault-reason-input');
+                    if(input) input.removeAttribute('required');
+                }
+            }
+        }
+
+        function goToCloseWorkOrderScreen() {
+            hideAllScreens(); 
+            document.getElementById('work-summary').value = '';
+            document.getElementById('hours-spent').value = '';
+            document.getElementById('used-parts-textarea').value = '';
+            document.getElementById('technician-signature').value = '';
+            
+            document.getElementById('work-order-title').textContent = `${getTrans('work_summary')} - ${currentAssetId}`;
+            closeWorkOrderScreen.style.display = 'flex';
+        }
+        
+        const addAssetForm = document.getElementById('add-asset-form');
+        if (addAssetForm) {
+            addAssetForm.addEventListener('submit', function(event) {
+                event.preventDefault();
+                addNewAsset();
+            });
+        }
+
+        function addNewAsset() {
+            const assetId = document.getElementById('new-asset-id').value.trim();
+            const assetType = document.getElementById('new-asset-type').value;
+            const assetBrand = document.getElementById('new-asset-brand').value.trim();
+            const assetModel = document.getElementById('new-asset-model').value.trim();
+            const assetLocation = document.getElementById('new-asset-location').value.trim();
+            const purchaseDate = document.getElementById('new-asset-purchase-date').value;
+            
+            const messageElement = document.getElementById('add-asset-message');
+            messageElement.style.display = 'none';
+            messageElement.style.color = 'red';
+
+            if (ASSET_DATABASE[assetId]) {
+                messageElement.textContent = getTrans('alert_asset_exists');
+                messageElement.style.display = 'block';
+                return;
+            }
+
+            let specificData = {};
+            if (assetType.includes('PC')) {
+                specificData = {
+                    os: document.getElementById('new-asset-os').value.trim(),
+                    processor: document.getElementById('new-asset-processor').value.trim(),
+                    ram: document.getElementById('new-asset-ram').value.trim(),
+                    storage: document.getElementById('new-asset-storage').value.trim(),
+                };
+            } else if (assetType.includes('Printer')) {
+                specificData = { color: document.getElementById('new-asset-color').value };
+            } else if (assetType.includes('UPS')) {
+                specificData = { size: document.getElementById('new-asset-size').value.trim() };
+            }
+
+            const newAsset = {
+                id: assetId, type: assetType, brand: assetBrand, model: assetModel,
+                location: assetLocation, purchaseDate: purchaseDate, lastMaintenance: "N/A", 
+                status: "Operational", faultReason: null, ...specificData 
+            };
+            
+            ASSET_DATABASE[assetId] = newAsset;
+            saveAssetDatabase();
+            
+            messageElement.style.color = 'green';
+            messageElement.textContent = getTrans('alert_asset_added');
+            messageElement.style.display = 'block';
+            
+            setTimeout(() => { goToAssetDetailScreen(assetId, newAsset); }, 1500);
+        }
+
+        function processQrCode(decodedText) {
+            const assetId = decodedText.trim();
+            const assetData = ASSET_DATABASE[assetId];
+            if (assetData) { goToAssetDetailScreen(assetId, assetData, false); } 
+            else { alert(`${getTrans('no_assets_found')} (${assetId})`); goToHomeScreen(); }
+        }
+        
+        function stopCamera() {
+            if (html5QrCode && html5QrCode.isScanning) {
+                html5QrCode.stop().catch(err => console.warn(err));
+                html5QrCode = null; 
+            }
+            readerContainer.style.display = 'none';
+            if (qrScanButton) qrScanButton.style.display = 'flex';
+            if (cameraBackButton) cameraBackButton.style.display = 'none';
+        }
+        
+        function backFromCamera() { stopCamera(); goToHomeScreen(); }
+
+        function startCamera() {
+            stopCamera(); 
+            hideAllScreens();
+            homeScreen.style.display = 'flex';
+            readerContainer.style.display = 'block';
+            qrScanButton.style.display = 'none';
+            cameraBackButton.style.display = 'flex';
+
+            if (!html5QrCode) { html5QrCode = new Html5Qrcode(qrCodeRegionId); }
+            const scanSize = Math.min(window.innerWidth * 0.80, 380); // يتكيف مع حجم الشاشة
+
+const config = {
+    fps: 12,
+    qrbox: { width: scanSize, height: scanSize },
+    aspectRatio: 1.0, // يساعد على استقرار الصورة
+    facingMode: "environment"
+};
+            
+            html5QrCode.start({ facingMode: "environment" }, config, (decodedText) => {
+                stopCamera(); processQrCode(decodedText);
+            }, (errorMessage) => { console.log(`Error: ${errorMessage}`); })
+            .catch(err => { alert(getTrans('alert_camera_error')); stopCamera(); goToHomeScreen(); });
+        }
+        
+        function triggerImageUpload() { stopCamera(); goToHomeScreen(); qrUploadInput.click(); }
+        
+        qrUploadInput.addEventListener('change', (event) => {
+            if (event.target.files && event.target.files.length > 0) {
+                const imageFile = event.target.files[0];
+                if (!html5QrCode) { html5QrCode = new Html5Qrcode(qrCodeRegionId); }
+                html5QrCode.scanFile(imageFile, true)
+                    .then(decodedText => { processQrCode(decodedText); qrUploadInput.value = ''; })
+                    .catch(err => { alert(getTrans('alert_no_qr')); goToHomeScreen(); qrUploadInput.value = ''; });
+            }
+        });
+
+        function findUserAndDisplayQuestion() {
+            const recoveryUsername = document.getElementById('recovery-username').value.trim().toLowerCase();
+            const recoveryMessage = document.getElementById('recovery-message');
+            recoveryMessage.style.display = 'none';
+            
+            if (VALID_CREDENTIALS[recoveryUsername]) {
+                const userData = VALID_CREDENTIALS[recoveryUsername];
+                userInRecovery = recoveryUsername; 
+                document.getElementById('recovery-step-1').style.display = 'none';
+                document.getElementById('find-user-btn').style.display = 'none';
+                document.getElementById('recovery-step-2').style.display = 'block';
+                
+                const questionKeyMap = SECURITY_QUESTIONS_MAP;
+                const qKey = questionKeyMap[userData.securityQ];
+                
+                document.getElementById('security-question-label').textContent = qKey ? getTrans(qKey) : userData.securityQ;
+                document.getElementById('recovery-prompt').textContent = `${getTrans('answer_for')} ${recoveryUsername}:`;
+                document.getElementById('recovery-security-answer').value = '';
+                document.getElementById('recovery-new-password').value = '';
+            } else {
+                recoveryMessage.textContent = getTrans('error_account_not_found');
+                recoveryMessage.style.display = 'block';
+            }
+        }
+        
+        function checkSecurityAnswer() {
+            const answer = document.getElementById('recovery-security-answer').value.trim().toLowerCase();
+            const newPassword = document.getElementById('recovery-new-password').value.trim();
+            const recoveryMessage = document.getElementById('recovery-message');
+            recoveryMessage.style.display = 'none';
+
+            if (!userInRecovery || !VALID_CREDENTIALS[userInRecovery]) { return; }
+            if (answer === VALID_CREDENTIALS[userInRecovery].securityA.toLowerCase()) {
+                if (newPassword.length < 4) {
+                    recoveryMessage.textContent = getTrans('error_pass_short');
+                    recoveryMessage.style.display = 'block';
+                    return;
+                }
+                VALID_CREDENTIALS[userInRecovery].password = newPassword;
+                saveCredentialsToLocalStorage(); 
+                recoveryMessage.style.color = 'green';
+recoveryMessage.textContent = getTrans('success_redirecting');
+recoveryMessage.style.display = 'block';
+                setTimeout(goToLoginScreenFromRegister, 2000); 
+    } else {
+                recoveryMessage.textContent = getTrans('incorrect_answer');
+                recoveryMessage.style.display = 'block';
+            }
+        }
+
+        if (navProfileButton) navProfileButton.addEventListener('click', (e) => { e.preventDefault(); goToProfileScreen(); });
+        if (navAddAssetButton) navAddAssetButton.addEventListener('click', (e) => { e.preventDefault(); goToAddAssetScreen(); });
+        if (logoutButton) logoutButton.addEventListener('click', (e) => { e.preventDefault(); confirmLogout(); });
+
+        const loginForm = document.getElementById('login-form');
+        if (loginForm) {
+            loginForm.addEventListener('submit', function(event) {
+                event.preventDefault(); 
+                const username = document.getElementById('username').value.trim().toLowerCase(); 
+                const password = document.getElementById('password').value.trim();
+                const errorMessage = document.getElementById('error-message');
+                const userDisplay = document.getElementById('user-display');
+                const currentDateDisplay = document.getElementById('current-date-display');
+                const userData = VALID_CREDENTIALS[username];
+
+                errorMessage.style.display = 'none';
+                if (userData) {
+                    if (password === userData.password) {
+                        currentLoggedInUser = username; 
+                        userDisplay.textContent = document.getElementById('username').value.trim();
+                        
+                        const now = new Date();
+                        const locale = currentLanguage === 'ar' ? 'ar-DZ' : (currentLanguage === 'fr' ? 'fr-FR' : 'en-US');
+                        currentDateDisplay.textContent = now.toLocaleDateString(locale, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+
+                        loginScreen.style.display = 'none';
+                        homeScreen.style.display = 'flex';
+                        document.querySelectorAll('.nav-bar .nav-item').forEach(item => item.classList.remove('active'));
+                        document.getElementById('nav-profile-button').classList.add('active');
+                    } else {
+                        errorMessage.textContent = getTrans('error_invalid_pass'); 
+                        errorMessage.style.display = 'block';
+                    }
+                } else {
+                    errorMessage.textContent = getTrans('error_account_not_found'); 
+                    errorMessage.style.display = 'block';
+                }
+            });
+        }
+
+        const registerForm = document.getElementById('register-form');
+        if (registerForm) {
+            registerForm.addEventListener('submit', function(event) {
+                event.preventDefault();
+                const newUsername = document.getElementById('register-username').value.trim().toLowerCase();
+                const newPassword = document.getElementById('register-password').value.trim();
+                const confirmPassword = document.getElementById('register-confirm-password').value.trim();
+                const securityQ = document.getElementById('security-question').value; 
+                const securityA = document.getElementById('security-answer').value.trim().toLowerCase(); 
+                const errorMsg = document.getElementById('register-error-message');
+                const successMsg = document.getElementById('register-success-message');
+
+                errorMsg.style.display = 'none'; successMsg.style.display = 'none';
+
+                if (newPassword !== confirmPassword) { errorMsg.textContent = getTrans('error_pass_mismatch'); errorMsg.style.display = 'block'; return; }
+                if (newPassword.length < 4) { errorMsg.textContent = getTrans('error_pass_short'); errorMsg.style.display = 'block'; return; }
+                if (newUsername in VALID_CREDENTIALS) { errorMsg.textContent = getTrans('error_user_exists'); errorMsg.style.display = 'block'; return; }
+                if (!securityQ || securityA === "") { errorMsg.textContent = getTrans('error_security_missing'); errorMsg.style.display = 'block'; return; }
+
+                VALID_CREDENTIALS[newUsername] = { password: newPassword, securityQ: securityQ, securityA: securityA, isAdmin: false };
+                saveCredentialsToLocalStorage(); 
+                successMsg.textContent = getTrans('msg_account_created');
+                successMsg.style.display = 'block';
+                setTimeout(goToLoginScreenFromRegister, 2000); 
+            });
+        }
+
+        const workOrderForm = document.getElementById('work-order-form');
+        if (workOrderForm) {
+            workOrderForm.addEventListener('submit', function(event) {
+                event.preventDefault();
+                submitWorkOrder();
+            });
+        }
+        
+        function submitWorkOrder() {
+            if (!currentAssetId || !ASSET_DATABASE[currentAssetId]) { alert(getTrans('error_asset_missing')); return; }
+            const todayDate = getTodayDateString();
+            const workSummary = document.getElementById('work-summary').value.trim();
+            const hoursSpent = document.getElementById('hours-spent').value.trim();
+            const usedParts = document.getElementById('used-parts-textarea').value.trim();
+            const technicianSignature = document.getElementById('technician-signature').value.trim();
+            const assetData = ASSET_DATABASE[currentAssetId];
+            
+            const newHistoryEntry = {
+                id: generateUniqueId(), assetId: currentAssetId, date: todayDate,
+                technician: technicianSignature, hours: hoursSpent, summary: workSummary,
+                parts: usedParts, submittedBy: currentLoggedInUser 
+            };
+            
+            WORK_HISTORY.push(newHistoryEntry);
+            saveWorkHistory(); 
+            assetData.lastMaintenance = todayDate;
+            assetData.status = "Operational"; 
+            assetData.faultReason = null; 
+            saveAssetDatabase();
+            
+            alert(getTrans('alert_report_submitted'));
+            goToAssetDetailScreen(currentAssetId, assetData);
+        }
+        
+        initializeAssetDatabase(); 
+        initializeCredentials();
+        changeLanguage('ar');
+
+    </script>
+</body>
+</html>
